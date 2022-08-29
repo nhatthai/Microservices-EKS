@@ -1,0 +1,5 @@
+.vs/*
+.DS_Store
+*/bin/Debug/*
+*/obj/*
+*/bin/*
