@@ -19,16 +19,13 @@ namespace NET6.Microservice.Messages
         /// Requires amqp:// protocol in the connection string
         /// Expects connection string to follow RabbitMQ format - https://www.rabbitmq.com/uri-spec.html
         /// </summary>
-        /// <param name="configuration"></param>
         /// <param name="configurator">configurator of RabbitMQ</param>
-        /// <param name="sectionName"></param>
+        /// <param name="connectionString"></param>
         /// <exception cref="InvalidOperationException"></exception>
         public static void ConfigureNodes(
-            IConfiguration configuration, IRabbitMqBusFactoryConfigurator configurator, string sectionName)
+            IRabbitMqBusFactoryConfigurator configurator, string connectionString)
         {
-            var connectionString = configuration.GetSection(sectionName).Value;
-
-            if (connectionString == null)
+            if (string.IsNullOrEmpty(connectionString))
             {
                 throw new InvalidOperationException($"{connectionString} is not provided in the appsettings.json");
             }
@@ -60,11 +57,9 @@ namespace NET6.Microservice.Messages
         /// <param name="sectionName"></param>
         /// <exception cref="InvalidOperationException"></exception>
         public static void ConfigureNodes(
-            IConfiguration configuration, IAmazonSqsBusFactoryConfigurator configurator, string sectionName)
+            IAmazonSqsBusFactoryConfigurator configurator, string connectionString)
         {
-            var connectionString = configuration.GetSection(sectionName).Value;
-
-            if (connectionString == null)
+            if (string.IsNullOrEmpty(connectionString))
             {
                 throw new InvalidOperationException($"{connectionString} is not provided in the appsettings.json");
             }
