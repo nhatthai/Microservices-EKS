@@ -58,7 +58,10 @@ static void InitMassTransitConfig(IServiceCollection services, IConfiguration co
             configureConsumer.UseConcurrentMessageLimit(2);
         });
 
-        if (massTransitConfiguration == null) throw new ArgumentNullException("MassTransit config is null");
+        if (massTransitConfiguration == null)
+        {
+            throw new ArgumentNullException("MassTransit config is null");
+        }
 
         if (massTransitConfiguration.IsUsingAmazonSQS)
         {

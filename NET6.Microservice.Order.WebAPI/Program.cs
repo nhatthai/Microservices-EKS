@@ -17,6 +17,7 @@ builder.Services.AddSwaggerGen();
 var configuration = builder.Configuration;
 
 builder.Services.AddOptions<MassTransitConfiguration>().Bind(configuration.GetSection("MassTransit"));
+
 InitMassTransitConfig(builder.Services, configuration);
 
 AddOpenTelemetryTracing(builder);
@@ -90,7 +91,7 @@ static void AddOpenTelemetryTracing(WebApplicationBuilder builder)
                 //     }
                 // }
             )
-            .AddSource(nameof(IBus)) // when we manually create activities, we need to setup the sources here
+            //.AddSource(nameof(IBus)) // when we manually create activities, we need to setup the sources here
             .AddZipkinExporter(options =>
             {
                 options.Endpoint = new Uri("http://localhost:9411/api/v2/spans");
