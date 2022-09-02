@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NET6.Microservice.Order.WebAPI", "NET6.Microservice.Order.WebAPI\NET6.Microservice.Order.WebAPI.csproj", "{B0F32207-21CB-4ECA-82D3-6A5EA330F4AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NET6.Microservice.Order.API", "NET6.Microservice.Order.API\NET6.Microservice.Order.API.csproj", "{B0F32207-21CB-4ECA-82D3-6A5EA330F4AF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NET6.Microservice.Order.WebAPI.Test", "NET6.Microservice.Order.WebAPI.Test\NET6.Microservice.Order.WebAPI.Test.csproj", "{077C3CDC-7E10-4F59-AF8F-91184861B868}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NET6.Microservice.Order.API.Test", "NET6.Microservice.Order.API.Test\NET6.Microservice.Order.API.Test.csproj", "{077C3CDC-7E10-4F59-AF8F-91184861B868}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NET6.Microservice.Messages", "NET6.Microservice.Messages\NET6.Microservice.Messages.csproj", "{DA4A3835-2D3D-4B19-B93B-70E035A1A7C0}"
 EndProject
@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NET6.Microservice.Infrastru
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NET6.Microservice.Core", "NET6.Microservice.Core\NET6.Microservice.Core.csproj", "{4CD46225-F5B5-468F-A021-415AA690BC00}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NET6.Microservice.Catalog.WebAPI", "NET6.Microservice.Catalog.WebAPI\NET6.Microservice.Catalog.WebAPI.csproj", "{81362F46-DE68-4A0D-A6F7-83D54874FA06}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NET6.Microservice.Catalog.API", "NET6.Microservice.Catalog.API\NET6.Microservice.Catalog.API.csproj", "{81362F46-DE68-4A0D-A6F7-83D54874FA06}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NET6.Microservice.EmailService", "NET6.Microservice.EmailService\NET6.Microservice.EmailService.csproj", "{BAF95A35-D464-450A-9B63-A374E5080E45}"
 EndProject

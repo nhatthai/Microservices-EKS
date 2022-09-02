@@ -4,17 +4,31 @@ using NET6.Microservice.Messages;
 using NET6.Microservice.Messages.Commands;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Serilog;
+using Serilog.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var configuration = builder.Configuration;
+
+//create the logger and setup your sinks, filters and properties
+Log.Logger = new LoggerConfiguration()
+    .Enrich.WithExceptionDetails()
+    .ReadFrom.Configuration(configuration)
+    .Enrich.WithProperty("Environment", configuration.GetValue<string>("Environment"))
+    .CreateLogger();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(Log.Logger);
+
 
 builder.Services.AddOptions<MassTransitConfiguration>().Bind(configuration.GetSection("MassTransit"));
 

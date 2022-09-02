@@ -42,6 +42,10 @@ IHost host = Host.CreateDefaultBuilder(args)
 
         services.AddHostedService<Worker>();
     })
+    .ConfigureLogging(logging => {
+        logging.ClearProviders();
+        logging.AddSerilog(Log.Logger);
+    })
     .Build();
 
 static void InitMassTransitConfig(IServiceCollection services, IConfiguration configuration)
@@ -96,7 +100,7 @@ static void InitMassTransitConfig(IServiceCollection services, IConfiguration co
         }
     });
 
-    services.AddMassTransitHostedService();
+    //services.AddMassTransitHostedService();
 }
 
 await host.RunAsync();

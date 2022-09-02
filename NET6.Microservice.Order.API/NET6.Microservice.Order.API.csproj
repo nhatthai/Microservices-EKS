@@ -4,11 +4,11 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>NET6.WebAPI</RootNamespace>
-    <AssemblyName>NET6.WebAPI</AssemblyName>
+    <RootNamespace>NET6.Microservice.Order.WebAPI</RootNamespace>
+    <AssemblyName>NET6.Microservice.Order.WebAPI</AssemblyName>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(RunConfiguration)' == 'NET6_WebAPI' " />
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'NET6.Microservice.Order.WebAPI' " />
   <ItemGroup>
     <PackageReference Include="OpenTelemetry" Version="1.3.0" />
     <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.3.0" />
