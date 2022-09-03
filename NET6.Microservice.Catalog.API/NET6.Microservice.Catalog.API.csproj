@@ -7,7 +7,7 @@
     <AssemblyName>NET6.Microservice.Catalog.API</AssemblyName>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(RunConfiguration)' == 'NET6.Microservices.Catalog.WebAPI' " />
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'NET6.Microservices.Catalog.API' " />
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.2.1" />
