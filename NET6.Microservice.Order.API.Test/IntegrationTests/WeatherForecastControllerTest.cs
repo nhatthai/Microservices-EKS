@@ -1,6 +1,6 @@
 using Net6.WebAPI.Test.Extentions;
 using Net6.WebAPI.Test.Fixtures;
-using NET6.Microservice.Order.WebAPI;
+using NET6.Microservice.Order.API;
 using System.Net;
 using Xunit;
 

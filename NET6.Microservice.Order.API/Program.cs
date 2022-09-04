@@ -7,6 +7,10 @@ using OpenTelemetry.Trace;
 using Serilog;
 using Serilog.Exceptions;
 
+// This is required if the collector doesn't expose an https endpoint. By default, .NET
+// only allows http2 (required for gRPC) to secure endpoints.
+AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -29,12 +33,11 @@ Log.Logger = new LoggerConfiguration()
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(Log.Logger);
 
-
 builder.Services.AddOptions<MassTransitConfiguration>().Bind(configuration.GetSection("MassTransit"));
 
 InitMassTransitConfig(builder.Services, configuration);
 
-AddOpenTelemetryTracing(builder);
+InitOpenTelemetryTracing(builder, configuration);
 
 // Add the IStartupFilter using the helper method
 PathBaseStartup.AddPathBaseFilter(builder);
@@ -85,13 +88,12 @@ static void InitMassTransitConfig(IServiceCollection services, IConfiguration co
     EndpointConvention.Map<Order>(new Uri(massTransitConfiguration.OrderQueue));
 }
 
-static void AddOpenTelemetryTracing(WebApplicationBuilder builder)
+static void InitOpenTelemetryTracing(WebApplicationBuilder builder, IConfiguration configuration)
 {
     var serviceName = "OrderApi";
     builder.Services.AddOpenTelemetryTracing(builder =>
     {
         builder
-            .AddConsoleExporter()
             .AddSource(serviceName)
             .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName))
             .AddAspNetCoreInstrumentation()
@@ -105,10 +107,13 @@ static void AddOpenTelemetryTracing(WebApplicationBuilder builder)
                 //     }
                 // }
             )
-            //.AddSource(nameof(IBus)) // when we manually create activities, we need to setup the sources here
             .AddZipkinExporter(options =>
             {
-                options.Endpoint = new Uri("http://localhost:9411/api/v2/spans");
+                var zipkinURI = configuration.GetValue<string>("OpenTelemetry:ZipkinURI");
+                if (!string.IsNullOrEmpty(zipkinURI))
+                {
+                    options.Endpoint = new Uri(zipkinURI);
+                }
             });
     });
 }

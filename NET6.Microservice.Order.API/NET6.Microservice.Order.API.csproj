@@ -8,7 +8,7 @@
     <AssemblyName>NET6.Microservice.Order.API</AssemblyName>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(RunConfiguration)' == 'NET6.Microservice.Order.API' " />
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'NET6.Microservice.Order.WebAPI' " />
   <ItemGroup>
     <PackageReference Include="OpenTelemetry" Version="1.3.0" />
     <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.3.0" />

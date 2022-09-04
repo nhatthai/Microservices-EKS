@@ -45,17 +45,18 @@ namespace NET6.Microservice.Order.WebAPI.Controllers
                     OrderId = Guid.NewGuid(),
                     OrderAmount = order.OrderAmount,
                     OrderDate = DateTime.Now,
-                    OrderNumber = order.OrderNumber
+                    OrderNumber = order.OrderNumber,
+                    CorrelationId = activity?.Id
                 }); ;
 
                 _logger.LogInformation("Send to a message {CorrelationId} {OrderAmount}, {OrderNumber}", correlationId, order.OrderAmount, order.OrderNumber);
 
-                activity?.SetStatus(ActivityStatusCode.Ok, "Something bad happened!");
+                activity?.SetStatus(ActivityStatusCode.Ok, "Send a message successfully.");
 
                 return Ok();
             }
 
-            activity?.SetStatus(ActivityStatusCode.Error, "Something bad happened!");
+            activity?.SetStatus(ActivityStatusCode.Error, "Error occured when sending a message in Post Order API");
             return BadRequest();
         }
     }
