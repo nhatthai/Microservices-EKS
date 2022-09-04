@@ -1,4 +1,4 @@
-namespace NET6.Microservices.Catalog.WebAPI;
+namespace NET6.Microservices.Catalog.API;
 
 public class CatalogSettings
 {

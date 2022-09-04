@@ -9,6 +9,11 @@
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'NET6.Microservices.Catalog.API' " />
   <ItemGroup>
+    <PackageReference Include="OpenTelemetry" Version="1.3.0" />
+    <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="1.3.0" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc9.4" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc9.4" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc9.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.2.1" />
     <PackageReference Include="System.Data.SqlClient" version="4.8.2" Version="4.8.2" />

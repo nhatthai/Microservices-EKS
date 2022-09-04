@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace NET6.Microservice.Order.WebAPI.Controllers
+namespace NET6.Microservice.Order.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]

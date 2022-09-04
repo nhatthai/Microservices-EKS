@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace Net6.WebAPI.Test.Extentions
+namespace Net6.API.Test.Extentions
 {
     internal static class HttpContentExtensions
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NET6.Microservice.Catalog.WebAPI.Infrastructure.Exceptions
+namespace NET6.Microservice.Catalog.API.Infrastructure.Exceptions
 {
     public class CatalogDomainException : Exception
     {

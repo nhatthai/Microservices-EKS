@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace NET6.Microservice.Order.WebAPI.Models.Requests
+namespace NET6.Microservice.Order.API.Models.Requests
 {
     public class OrderRequest
     {

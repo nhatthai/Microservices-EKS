@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "NET6.Microservice.Order.WebAPI": {
+    "NET6.Microservice.Order.API": {
       "commandName": "Project",
       "launchBrowser": true,
       "applicationUrl": "http://localhost:51968",

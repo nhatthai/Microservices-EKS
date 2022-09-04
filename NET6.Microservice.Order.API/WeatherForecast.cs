@@ -1,4 +1,4 @@
-namespace NET6.Microservice.Order.WebAPI
+namespace NET6.Microservice.Order.API
 {
     public class WeatherForecast
     {

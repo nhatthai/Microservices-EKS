@@ -1,10 +1,10 @@
-using Net6.WebAPI.Test.Extentions;
-using Net6.WebAPI.Test.Fixtures;
+using Net6.API.Test.Extentions;
+using Net6.API.Test.Fixtures;
 using NET6.Microservice.Order.API;
 using System.Net;
 using Xunit;
 
-namespace NET6.WebAPI.Test.IntegrationTests
+namespace NET6.API.Test.IntegrationTests
 {
     public class WeatherForecastControllerTest : IClassFixture<CustomWebApplicationFactory<Program>>
     {

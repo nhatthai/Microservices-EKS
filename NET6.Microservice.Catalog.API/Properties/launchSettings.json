@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "NET6.Microservices.Catalog.WebAPI": {
+    "NET6.Microservices.Catalog.API": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",
@@ -22,6 +22,14 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "NET6.Microservice.Catalog.API": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:38640",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

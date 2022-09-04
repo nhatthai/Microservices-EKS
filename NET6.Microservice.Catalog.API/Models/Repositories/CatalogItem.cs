@@ -1,4 +1,4 @@
-using NET6.Microservice.Catalog.WebAPI.Infrastructure.Exceptions;
+using NET6.Microservice.Catalog.API.Infrastructure.Exceptions;
 
 namespace NET6.Microservices.Catalog.API.Models.Repositories;
 

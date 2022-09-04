@@ -6,7 +6,7 @@ using NET6.Microservices.Catalog.API.Infrastructure;
 using NET6.Microservices.Catalog.API.Models.Repositories;
 using NET6.Microservices.Catalog.API.Models.ViewModels;
 
-namespace NET6.Microservices.Catalog.WebAPI.Controllers;
+namespace NET6.Microservices.Catalog.API.Controllers;
 
 [ApiController]
 [Route("[controller]")]

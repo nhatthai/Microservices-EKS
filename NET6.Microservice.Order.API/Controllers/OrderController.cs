@@ -1,10 +1,10 @@
 using System.Diagnostics;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
-using NET6.Microservice.Order.WebAPI.Models.Requests;
+using NET6.Microservice.Order.API.Models.Requests;
 
 
-namespace NET6.Microservice.Order.WebAPI.Controllers
+namespace NET6.Microservice.Order.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
