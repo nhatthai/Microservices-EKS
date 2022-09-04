@@ -1,6 +1,7 @@
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
-namespace NET6.Microservice.Order.API.Controllers
+namespace NET6.Microservice.Catalog.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -12,6 +13,7 @@ namespace NET6.Microservice.Order.API.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        private static readonly ActivitySource _activitySource = new ActivitySource(nameof(WeatherForecastController));
 
         public WeatherForecastController(ILogger<WeatherForecastController> logger)
         {
@@ -21,6 +23,9 @@ namespace NET6.Microservice.Order.API.Controllers
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {
+            using var activity = _activitySource.StartActivity("OrderProduct");
+            activity?.SetStatus(ActivityStatusCode.Ok, "Get API successfully.");
+
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),
