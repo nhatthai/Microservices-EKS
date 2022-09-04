@@ -9,9 +9,9 @@ namespace NET6.Microservice.WorkerService.Services
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public Task SendEmail(Guid notificationId, string email, string body)
+        public Task SendEmail(string correlationId, Guid notificationId, string email, string body)
         {
-            _logger.LogInformation("Process send email {notificationId}, {email}", notificationId, email);
+            _logger.LogInformation("Process send email {CorrelationId} {NotificationId}, {Email}", correlationId, notificationId, email);
 
             Task.Delay(1000);
 

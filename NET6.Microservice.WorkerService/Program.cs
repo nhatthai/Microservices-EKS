@@ -12,7 +12,6 @@ var configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json")
     .Build();
 
-
 Log.Logger = new LoggerConfiguration()
     .Enrich.WithExceptionDetails()
     .ReadFrom.Configuration(configuration)
@@ -31,12 +30,16 @@ IHost host = Host.CreateDefaultBuilder(args)
         {
             builder
                 .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
                 .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("Worker"))
                 .AddSource(nameof(OrderConsumer)) // when we manually create activities, we need to setup the sources here
                 .AddZipkinExporter(options =>
                 {
-                    // not needed, it's the default
-                    //options.Endpoint = new Uri("http://localhost:9411/api/v2/spans");
+                    var zipkinURI = configuration.GetValue<string>("OpenTelemetry:ZipkinURI");
+                    if (!string.IsNullOrEmpty(zipkinURI))
+                    {
+                        options.Endpoint = new Uri(zipkinURI);
+                    }
                 });
         });
 
