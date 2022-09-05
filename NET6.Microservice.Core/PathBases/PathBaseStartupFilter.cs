@@ -9,7 +9,11 @@ namespace NET6.Microservice.Core.PathBases
         // Takes an IOptions<PathBaseSettings> instead of a string directly
         public PathBaseStartupFilter(IOptions<PathBaseSettings> options)
         {
-            _pathBase = options.Value.ApplicationPathBase;
+            PathBaseSettings value = options.Value;
+            if (value != null)
+            {
+                _pathBase = value.ApplicationPathBase;
+            }
         }
 
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)

@@ -2,7 +2,7 @@ using System.Diagnostics;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using NET6.Microservice.Order.API.Models.Requests;
-
+using OpenTelemetry.Trace;
 
 namespace NET6.Microservice.Order.API.Controllers
 {
@@ -12,12 +12,14 @@ namespace NET6.Microservice.Order.API.Controllers
     {
         private readonly ILogger<OrderController> _logger;
         private readonly IBus _bus;
+        private readonly Tracer _tracer;
         private static readonly ActivitySource _activitySource = new ActivitySource(nameof(OrderController));
 
-        public OrderController(ILogger<OrderController> logger, IBus bus)
+        public OrderController(ILogger<OrderController> logger, IBus bus, Tracer tracer)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _bus = bus ?? throw new ArgumentNullException(nameof(logger));
+            _tracer = tracer ?? throw new ArgumentNullException(nameof(tracer));
         }
 
         [HttpGet]
@@ -30,7 +32,8 @@ namespace NET6.Microservice.Order.API.Controllers
         [HttpPost]
         public async Task<IActionResult> OrderProduct(OrderRequest order)
         {
-            using var activity = _activitySource.StartActivity("OrderProduct");
+            //using var span = _tracer.StartActiveSpan("Order.Product Send", SpanKind.Producer);
+            using var activity = _activitySource.StartActivity("OrderProduct", ActivityKind.Server);
 
             var correlationId = Guid.NewGuid();
             activity?.SetTag("correlationId", correlationId);
@@ -41,7 +44,8 @@ namespace NET6.Microservice.Order.API.Controllers
 
             if (order != null)
             {
-                await _bus.Send(new Messages.Commands.Order() {
+                await _bus.Send(new Messages.Commands.Order()
+                {
                     OrderId = correlationId,
                     OrderAmount = order.OrderAmount,
                     OrderDate = DateTime.Now,
@@ -51,12 +55,13 @@ namespace NET6.Microservice.Order.API.Controllers
 
                 _logger.LogInformation("Send to a message {CorrelationId} {OrderAmount}, {OrderNumber}", correlationId, order.OrderAmount, order.OrderNumber);
 
+                //span.SetStatus(Status.Ok);
                 activity?.SetStatus(ActivityStatusCode.Ok, "Send a message successfully.");
 
                 return Ok();
             }
 
-            activity?.SetStatus(ActivityStatusCode.Error, "Error occured when sending a message in Post Order API");
+            activity?.SetStatus(ActivityStatusCode.Error, "Error occurred when sending a message in Post Order API");
             return BadRequest();
         }
     }

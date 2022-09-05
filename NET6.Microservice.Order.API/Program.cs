@@ -1,8 +1,8 @@
 using MassTransit;
+using NET6.Microservice.Core.OpenTelemetry;
 using NET6.Microservice.Core.PathBases;
 using NET6.Microservice.Messages;
 using NET6.Microservice.Messages.Commands;
-using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
 using Serilog.Exceptions;
@@ -35,9 +35,11 @@ builder.Logging.AddSerilog(Log.Logger);
 
 builder.Services.AddOptions<MassTransitConfiguration>().Bind(configuration.GetSection("MassTransit"));
 
+
 InitMassTransitConfig(builder.Services, configuration);
 
-InitOpenTelemetryTracing(builder, configuration);
+OpenTelemetryStartup.InitOpenTelemetryTracing(builder.Services, configuration, "OrderAPI", Array.Empty<string>(), builder.Environment);
+builder.Services.AddSingleton(TracerProvider.Default.GetTracer("OrderAPI"));
 
 // Add the IStartupFilter using the helper method
 PathBaseStartup.AddPathBaseFilter(builder);
@@ -86,47 +88,6 @@ static void InitMassTransitConfig(IServiceCollection services, IConfiguration co
     });
 
     EndpointConvention.Map<Order>(new Uri(massTransitConfiguration.OrderQueue));
-}
-
-static void InitOpenTelemetryTracing(WebApplicationBuilder builder, IConfiguration configuration)
-{
-    var serviceName = "OrderApi";
-    builder.Services.AddOpenTelemetryTracing(builder =>
-    {
-        builder
-            .AddSource(serviceName)
-            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName))
-            .AddAspNetCoreInstrumentation()
-            .AddHttpClientInstrumentation(
-                // we can hook into existing activities and customize them
-                // options => options.Enrich = (activity, eventName, rawObject) =>
-                // {
-                //     if(eventName == "OnStartActivity" && rawObject is System.Net.Http.HttpRequestMessage request && request.Method == HttpMethod.Get)
-                //     {
-                //         activity.SetTag("DemoTag", "Adding some demo tag, just to see things working");
-                //     }
-                // }
-            )
-            .AddZipkinExporter(options =>
-            {
-                var zipkinURI = configuration.GetValue<string>("OpenTelemetry:ZipkinURI");
-                if (!string.IsNullOrEmpty(zipkinURI))
-                {
-                    options.Endpoint = new Uri(zipkinURI);
-                }
-            })
-            .AddJaegerExporter(options =>
-            {
-                var agentHost = configuration.GetValue<string>("OpenTelemetry:JaegerHost");
-                var agentPort = configuration.GetValue<int>("OpenTelemetry:JaegerPort");
-
-                if (!string.IsNullOrEmpty(agentHost) && agentPort > 0)
-                {
-                    options.AgentHost = agentHost;
-                    options.AgentPort = agentPort;
-                }
-            });
-    });
 }
 
 public partial class Program { }

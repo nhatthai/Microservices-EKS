@@ -1,9 +1,10 @@
 using MassTransit;
+using Microsoft.AspNetCore.Hosting;
+using NET6.Microservice.Core.OpenTelemetry;
 using NET6.Microservice.Messages;
 using NET6.Microservice.WorkerService;
 using NET6.Microservice.WorkerService.Consumers;
 using NET6.Microservice.WorkerService.Services;
-using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
 using Serilog.Exceptions;
@@ -26,34 +27,10 @@ IHost host = Host.CreateDefaultBuilder(args)
 
         InitMassTransitConfig(services, configuration);
 
-        services.AddOpenTelemetryTracing(builder =>
-        {
-            builder
-                .AddAspNetCoreInstrumentation()
-                .AddHttpClientInstrumentation()
-                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("Worker"))
-                .AddSource(nameof(OrderConsumer)) // when we manually create activities, we need to setup the sources here
-                .AddZipkinExporter(options =>
-                {
-                    var zipkinURI = configuration.GetValue<string>("OpenTelemetry:ZipkinURI");
+        string[] sources = new string[1] { nameof(OrderConsumer) };
+        OpenTelemetryStartup.InitOpenTelemetryTracing(services, configuration, "Worker", sources);
 
-                    if (!string.IsNullOrEmpty(zipkinURI))
-                    {
-                        options.Endpoint = new Uri(zipkinURI);
-                    }
-                })
-                .AddJaegerExporter(options =>
-                {
-                    var agentHost = configuration.GetValue<string>("OpenTelemetry:JaegerHost");
-                    var agentPort = configuration.GetValue<int>("OpenTelemetry:JaegerPort");
-
-                    if (!string.IsNullOrEmpty(agentHost) && agentPort > 0)
-                    {
-                        options.AgentHost = agentHost;
-                        options.AgentPort = agentPort;
-                    }
-                });
-        });
+        services.AddSingleton(TracerProvider.Default.GetTracer("OrderConsumer"));
 
         services.AddHostedService<Worker>();
     })
