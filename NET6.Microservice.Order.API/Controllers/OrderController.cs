@@ -42,7 +42,7 @@ namespace NET6.Microservice.Order.API.Controllers
             if (order != null)
             {
                 await _bus.Send(new Messages.Commands.Order() {
-                    OrderId = Guid.NewGuid(),
+                    OrderId = correlationId,
                     OrderAmount = order.OrderAmount,
                     OrderDate = DateTime.Now,
                     OrderNumber = order.OrderNumber,

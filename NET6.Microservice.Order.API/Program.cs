@@ -114,6 +114,17 @@ static void InitOpenTelemetryTracing(WebApplicationBuilder builder, IConfigurati
                 {
                     options.Endpoint = new Uri(zipkinURI);
                 }
+            })
+            .AddJaegerExporter(options =>
+            {
+                var agentHost = configuration.GetValue<string>("OpenTelemetry:JaegerHost");
+                var agentPort = configuration.GetValue<int>("OpenTelemetry:JaegerPort");
+
+                if (!string.IsNullOrEmpty(agentHost) && agentPort > 0)
+                {
+                    options.AgentHost = agentHost;
+                    options.AgentPort = agentPort;
+                }
             });
     });
 }
