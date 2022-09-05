@@ -36,9 +36,21 @@ IHost host = Host.CreateDefaultBuilder(args)
                 .AddZipkinExporter(options =>
                 {
                     var zipkinURI = configuration.GetValue<string>("OpenTelemetry:ZipkinURI");
+
                     if (!string.IsNullOrEmpty(zipkinURI))
                     {
                         options.Endpoint = new Uri(zipkinURI);
+                    }
+                })
+                .AddJaegerExporter(options =>
+                {
+                    var agentHost = configuration.GetValue<string>("OpenTelemetry:JaegerHost");
+                    var agentPort = configuration.GetValue<int>("OpenTelemetry:JaegerPort");
+
+                    if (!string.IsNullOrEmpty(agentHost) && agentPort > 0)
+                    {
+                        options.AgentHost = agentHost;
+                        options.AgentPort = agentPort;
                     }
                 });
         });
