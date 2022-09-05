@@ -19,6 +19,12 @@ services:
       # Port used for the Zipkin UI and HTTP Api
       - 9411:9411
 
+  jaeger:
+    image: jaegertracing/opentelemetry-all-in-one
+    container_name: jaeger
+    ports:
+      - 16686:16686
+      - 6831:6831/udp
   # order.api:
   #   build:
   #     context: .
