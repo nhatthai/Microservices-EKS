@@ -1,11 +1,10 @@
 using System;
+using NET6.Microservice.Messages.Bases;
 
 namespace NET6.Microservice.Messages.Events
 {
-    public class Notification
+    public class Notification : BaseMessage
     {
-        Guid NotificationId { get; set; }
-
         string NotificationType { get; set; }
 
         string NotificationContent { get; set; }

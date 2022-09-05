@@ -1,11 +1,10 @@
 using System;
+using NET6.Microservice.Messages.Bases;
 
 namespace NET6.Microservice.Messages.Commands
 {
-    public class Order
+    public class Order : BaseMessage
     {
-        public string CorrelationId { get; set; }
-        
         public Guid OrderId { get; set; }
 
         public double OrderAmount { get; set; }
