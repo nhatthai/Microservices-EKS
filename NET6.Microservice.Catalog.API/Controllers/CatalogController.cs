@@ -1,7 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using NET6.Microservices.Catalog.API.Infrastructure;
 using NET6.Microservices.Catalog.API.Models.Repositories;
 using NET6.Microservices.Catalog.API.Models.ViewModels;
@@ -12,13 +11,11 @@ namespace NET6.Microservices.Catalog.API.Controllers;
 [Route("[controller]")]
 public class CatalogController : ControllerBase
 {
-    private readonly CatalogDBContext _catalogContext;
-    private readonly CatalogSettings _settings;
+    private readonly CatalogContext _catalogContext;
 
-    public CatalogController(CatalogDBContext context, IOptions<CatalogSettings> settings) 
+    public CatalogController(CatalogContext context) 
     {
         _catalogContext = context ?? throw new ArgumentNullException(nameof(context));
-        _settings = settings.Value;
     }
 
     // GET api/v1/[controller]/items[?pageSize=3&pageIndex=10]
@@ -27,21 +24,8 @@ public class CatalogController : ControllerBase
     [ProducesResponseType(typeof(PaginatedItemsViewModel<CatalogItem>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(IEnumerable<CatalogItem>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> ItemsAsync(
-        [FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 0, string ids = null)
+    public async Task<IActionResult> ItemsAsync([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 0)
     {
-        if (!string.IsNullOrEmpty(ids))
-        {
-            var items = await GetItemsByIdsAsync(ids);
-
-            if (!items.Any())
-            {
-                return BadRequest("ids value invalid. Must be comma-separated list of numbers");
-            }
-
-            return Ok(items);
-        }
-
         var totalItems = await _catalogContext.CatalogItems
             .LongCountAsync();
 
