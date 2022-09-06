@@ -26,7 +26,7 @@ IHost host = Host.CreateDefaultBuilder(args)
 
         InitMassTransitConfig(services, configuration);
 
-        string[] sources = new string[1] { "OrderController" };
+        string[] sources = new string[1] { "OrderConsumer" };
         OpenTelemetryStartup.InitOpenTelemetryTracing(services, configuration, "Worker", sources);
 
         services.AddHostedService<Worker>();

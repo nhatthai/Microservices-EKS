@@ -10,7 +10,7 @@ namespace NET6.Microservice.WorkerService.Consumers
     {
         private readonly ILogger<OrderConsumer> _logger;
         private readonly EmailService _emailService;
-        private static readonly ActivitySource _activitySource = new ActivitySource("OrderController");
+        private static readonly ActivitySource _activitySource = new ActivitySource("OrderConsumer");
         private static readonly TextMapPropagator Propagator = new TraceContextPropagator();
 
         public OrderConsumer(ILogger<OrderConsumer> logger, EmailService emailService)
