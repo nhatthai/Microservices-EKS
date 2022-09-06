@@ -24,6 +24,8 @@ namespace NET6.Microservice.WorkerService.Consumers
             var data = context.Message;
             var correlationId = data.CorrelationId;
 
+            _logger.LogInformation("Consume Order Message {CorrelationId} {OrderNumber}", correlationId, data.OrderNumber);
+
             // set property for extracting Propagation context
             var pros = new Dictionary<string, object>();
             pros["traceparent"] = correlationId;
@@ -35,8 +37,6 @@ namespace NET6.Microservice.WorkerService.Consumers
                 "Order.Product Consumer", ActivityKind.Consumer, parentContext.ActivityContext);
 
             OpenTelemetryActivity.AddActivityTagsMessage(activity);
-
-            _logger.LogInformation("Consume Order Message {CorrelationId} {OrderNumber}", correlationId, data.OrderNumber);
 
             try
             {
