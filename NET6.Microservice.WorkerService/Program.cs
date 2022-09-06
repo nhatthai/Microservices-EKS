@@ -5,7 +5,6 @@ using NET6.Microservice.Messages;
 using NET6.Microservice.WorkerService;
 using NET6.Microservice.WorkerService.Consumers;
 using NET6.Microservice.WorkerService.Services;
-using OpenTelemetry.Trace;
 using Serilog;
 using Serilog.Exceptions;
 
@@ -27,10 +26,8 @@ IHost host = Host.CreateDefaultBuilder(args)
 
         InitMassTransitConfig(services, configuration);
 
-        string[] sources = new string[1] { nameof(OrderConsumer) };
+        string[] sources = new string[1] { "OrderController" };
         OpenTelemetryStartup.InitOpenTelemetryTracing(services, configuration, "Worker", sources);
-
-        services.AddSingleton(TracerProvider.Default.GetTracer("OrderConsumer"));
 
         services.AddHostedService<Worker>();
     })

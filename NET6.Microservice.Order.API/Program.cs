@@ -3,6 +3,7 @@ using NET6.Microservice.Core.OpenTelemetry;
 using NET6.Microservice.Core.PathBases;
 using NET6.Microservice.Messages;
 using NET6.Microservice.Messages.Commands;
+using NET6.Microservice.Order.API.Controllers;
 using OpenTelemetry.Trace;
 using Serilog;
 using Serilog.Exceptions;
@@ -38,8 +39,8 @@ builder.Services.AddOptions<MassTransitConfiguration>().Bind(configuration.GetSe
 
 InitMassTransitConfig(builder.Services, configuration);
 
-OpenTelemetryStartup.InitOpenTelemetryTracing(builder.Services, configuration, "OrderAPI", Array.Empty<string>(), builder.Environment);
-builder.Services.AddSingleton(TracerProvider.Default.GetTracer("OrderAPI"));
+var sources = new string[] { "OrderController" };
+OpenTelemetryStartup.InitOpenTelemetryTracing(builder.Services, configuration, "OrderAPI", sources, builder.Environment);
 
 // Add the IStartupFilter using the helper method
 PathBaseStartup.AddPathBaseFilter(builder);
