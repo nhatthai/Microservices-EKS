@@ -3,8 +3,6 @@ using NET6.Microservice.Core.OpenTelemetry;
 using NET6.Microservice.Core.PathBases;
 using NET6.Microservice.Messages;
 using NET6.Microservice.Messages.Commands;
-using NET6.Microservice.Order.API.Controllers;
-using OpenTelemetry.Trace;
 using Serilog;
 using Serilog.Exceptions;
 

@@ -29,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NET6.Microservice.Catalog.API\NET6.Microservice.Catalog.API.csproj" />
     <ProjectReference Include="..\NET6.Microservice.Core\NET6.Microservice.Core.csproj" />
     <ProjectReference Include="..\NET6.Microservice.Messages\NET6.Microservice.Messages.csproj" />
   </ItemGroup>
