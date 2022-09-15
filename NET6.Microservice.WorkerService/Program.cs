@@ -8,32 +8,43 @@ using NET6.Microservice.WorkerService.Services;
 using Serilog;
 using Serilog.Exceptions;
 
-var configuration = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json")
-    .Build();
-
-Log.Logger = new LoggerConfiguration()
-    .Enrich.WithExceptionDetails()
-    .ReadFrom.Configuration(configuration)
-    .Enrich.WithProperty("Environment", configuration.GetValue<string>("Environment"))
-    .CreateLogger();
-
 IHost host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices(services =>
+    .UseWindowsService(options =>
     {
+        options.ServiceName = "WorkerService";
+    })
+    .ConfigureAppConfiguration((host, builder) =>{
+        //builder.AddConfiguration(configuration);
+        builder.AddEnvironmentVariables();
+        //builder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+    })
+    .ConfigureLogging((hostingContext,logging) => {
+        logging.ClearProviders();
+
+        var configuration = hostingContext.Configuration;
+
+        Log.Logger = new LoggerConfiguration()
+            .Enrich.WithExceptionDetails()
+            .ReadFrom.Configuration(configuration)
+            .Enrich.WithProperty("Environment", configuration.GetValue<string>("Environment"))
+            .CreateLogger();
+
+        logging.AddSerilog(Log.Logger);
+    })
+    .ConfigureServices((hostingContext, services) =>
+    {
+        var configuration = hostingContext.Configuration;
+
         services.AddOptions();
         services.AddSingleton<EmailService>();
+        services.AddOptions<MassTransitConfiguration>().Bind(configuration.GetSection("MassTransit"));
 
-        InitMassTransitConfig(services, configuration);
+        InitMassTransitConfig(services,configuration);
 
         string[] sources = new string[1] { "OrderConsumer" };
         OpenTelemetryStartup.InitOpenTelemetryTracing(services, configuration, "Worker", sources);
 
         services.AddHostedService<Worker>();
-    })
-    .ConfigureLogging(logging => {
-        logging.ClearProviders();
-        logging.AddSerilog(Log.Logger);
     })
     .Build();
 
@@ -89,7 +100,23 @@ static void InitMassTransitConfig(IServiceCollection services, IConfiguration co
         }
     });
 
-    //services.AddMassTransitHostedService();
+    services.AddMassTransitHostedService();
+
+    // OPTIONAL, but can be used to configure the bus options
+    services.AddOptions<MassTransitHostOptions>().Configure(options =>
+    {
+        // if specified, waits until the bus is started before
+        // returning from IHostedService.StartAsync
+        // default is false
+        options.WaitUntilStarted = true;
+
+        // if specified, limits the wait time when starting the bus
+        options.StartTimeout = TimeSpan.FromSeconds(40);
+
+        // if specified, limits the wait time when stopping the bus
+        options.StopTimeout = TimeSpan.FromSeconds(60);
+    });
 }
 
+//await host.Services.GetRequiredService<IBusControl>().StartAsync();
 await host.RunAsync();

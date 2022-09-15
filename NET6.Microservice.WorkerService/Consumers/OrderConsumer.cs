@@ -43,7 +43,7 @@ namespace NET6.Microservice.WorkerService.Consumers
                 // TODO: call service/task
                 Task.Delay(2000);
                 _emailService.SendEmail(correlationId, Guid.NewGuid(), "testing@domain.com", "Order: " + data.OrderNumber);
-                activity?.SetStatus(ActivityStatusCode.Ok, "Consume a message and process successfully.");
+                activity?.SetStatus(ActivityStatusCode.Ok, "Consumed a message and processed successfully.");
             }
             catch (Exception exception)
             {
