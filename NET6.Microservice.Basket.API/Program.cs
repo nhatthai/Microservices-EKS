@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using NET6.Microservice.Basket.API;
+using NET6.Microservice.Basket.API.Infrastructure.Filters;
 using NET6.Microservice.Basket.API.Infrastructure.Repositories;
 using NET6.Microservice.Core.OpenTelemetry;
 using NET6.Microservice.Core.PathBases;
@@ -11,13 +12,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
-// services.AddControllers(options =>
-//             {
-//                 options.Filters.Add(typeof(HttpGlobalExceptionFilter));
-//                 options.Filters.Add(typeof(ValidateModelStateFilter));
-
-//             });
+builder.Services.AddControllers(
+    options =>
+    {
+        options.Filters.Add(typeof(HttpGlobalExceptionFilter));
+        options.Filters.Add(typeof(ValidateModelStateFilter));
+    }
+).AddJsonOptions(options => options.JsonSerializerOptions.WriteIndented = true);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
