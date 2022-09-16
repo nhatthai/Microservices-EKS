@@ -2,14 +2,19 @@
 version: '3.4'
 
 services:
-  # sqldata:
-  #   container_name: sqldata
-  #   image: mcr.microsoft.com/mssql/server:2019-latest
-  #   environment:
-  #     SA_PASSWORD: Your_password123
-  #     ACCEPT_EULA: Y
-  #   ports:
-  #     - "1433:1433"
+  sqldata:
+    container_name: sqldata
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      SA_PASSWORD: Your_password123
+      ACCEPT_EULA: Y
+    ports:
+      - "1433:1433"
+
+  basket.data:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
@@ -35,6 +40,22 @@ services:
       - 16686:16686
       - 6831:6831/udp
 
+  basket.api:
+    build:
+      context: .
+      dockerfile: NET6.Microservice.Basket.API/Dockerfile
+    ports:
+      - "5097:80"
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - Serilog:WriteTo:0:Args:path=/app/logs/NET6.Microservice.Basket.API.logs.json
+      - MassTransit:MessageBusRabbitMQ=amqp://admin:password@rabbitmq:5671/
+      - OpenTelemetry:ZipkinURI=http://zipkin:9411/api/v2/spans/
+      - ConnectionString=http://basket.data
+    depends_on:
+      - rabbitmq
+      - basket.data
+
   order.api:
     build:
       context: .
@@ -49,19 +70,19 @@ services:
     depends_on:
       - rabbitmq
 
-  # catalog.api:
-  #   build:
-  #     context: .
-  #     dockerfile: NET6.Microservice.Catalog.API/Dockerfile
-  #   ports:
-  #     - "5226:80"
-  #   environment:
-  #     #- DOTNET_ENVIRONMENT=Development
-  #     - Serilog:WriteTo:0:Args:path=/app/logs/NET6.Microservice.Catalog.API.logs.json
-  #     - MassTransit:MessageBusRabbitMQ=amqp://admin:password@rabbitmq:5671/
-  #     - OpenTelemetry:ZipkinURI=http://zipkin:9411/api/v2/spans/
-  #   depends_on:
-  #     - rabbitmq
+  catalog.api:
+    build:
+      context: .
+      dockerfile: NET6.Microservice.Catalog.API/Dockerfile
+    ports:
+      - "5226:80"
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - Serilog:WriteTo:0:Args:path=/app/logs/NET6.Microservice.Catalog.API.logs.json
+      - MassTransit:MessageBusRabbitMQ=amqp://admin:password@rabbitmq:5671/
+      - OpenTelemetry:ZipkinURI=http://zipkin:9411/api/v2/spans/
+    depends_on:
+      - rabbitmq
 
   workerservice:
     build:
