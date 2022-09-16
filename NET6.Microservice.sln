@@ -17,7 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NET6.Microservice.EmailServ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NET6.Microservice.WorkerService", "NET6.Microservice.WorkerService\NET6.Microservice.WorkerService.csproj", "{CF9A371A-505C-468B-8EC8-833C5196FACD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NET6.Microservice.Infrastructure", "NET6.Microservice.Infrastructure\NET6.Microservice.Infrastructure.csproj", "{3BE9B4A8-FB50-4F9C-B87E-EF71A9C20CAB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NET6.Microservice.Infrastructure", "NET6.Microservice.Infrastructure\NET6.Microservice.Infrastructure.csproj", "{3BE9B4A8-FB50-4F9C-B87E-EF71A9C20CAB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NET6.Microservice.Basket.API", "NET6.Microservice.Basket.API\NET6.Microservice.Basket.API.csproj", "{96B4665B-9FB1-4455-BDC3-7362EFBFB3F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{3BE9B4A8-FB50-4F9C-B87E-EF71A9C20CAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3BE9B4A8-FB50-4F9C-B87E-EF71A9C20CAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3BE9B4A8-FB50-4F9C-B87E-EF71A9C20CAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96B4665B-9FB1-4455-BDC3-7362EFBFB3F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96B4665B-9FB1-4455-BDC3-7362EFBFB3F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96B4665B-9FB1-4455-BDC3-7362EFBFB3F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96B4665B-9FB1-4455-BDC3-7362EFBFB3F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

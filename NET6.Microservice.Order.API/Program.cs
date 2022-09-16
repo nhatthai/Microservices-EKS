@@ -34,7 +34,6 @@ builder.Logging.AddSerilog(Log.Logger);
 
 builder.Services.AddOptions<MassTransitConfiguration>().Bind(configuration.GetSection("MassTransit"));
 
-
 InitMassTransitConfig(builder.Services, configuration);
 
 var sources = new string[] { "OrderController" };

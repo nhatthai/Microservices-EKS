@@ -6,7 +6,8 @@ Sample Microservice on EKS, using Github Actions for deployment to EKS
 + Message Bus with RabbitMQ and SQS
 + Integrate OpenTelemetry for tracing and metrics between services
     - Using TraceContextPropagator
-+ Integrate Logging for troubleshooting and debug to New Relic
++ Sync the log files to New Relic for troubleshooting and debugging
++ Integrate with Auth0
 
 ### Usage
 
