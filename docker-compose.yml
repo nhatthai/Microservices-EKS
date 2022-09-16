@@ -51,7 +51,7 @@ services:
       - Serilog:WriteTo:0:Args:path=/app/logs/NET6.Microservice.Basket.API.logs.json
       - MassTransit:MessageBusRabbitMQ=amqp://admin:password@rabbitmq:5671/
       - OpenTelemetry:ZipkinURI=http://zipkin:9411/api/v2/spans/
-      - ConnectionString=http://basket.data
+      - ConnectionString=basket.data
     depends_on:
       - rabbitmq
       - basket.data
