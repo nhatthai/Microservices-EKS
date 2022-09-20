@@ -30,6 +30,17 @@ builder.Logging.AddSerilog(Log.Logger);
 
 builder.Services.Configure<CatalogSettings>(configuration);
 
+// Add services to the container.
+builder.Services.AddCors(c =>
+{
+    c.AddPolicy("AllowOrigin", builder =>
+        builder.WithOrigins(configuration.GetValue<string>("OriginWeb"))
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials()
+    );
+});
+
 AddDbContext(builder.Services, configuration);
 
 OpenTelemetryStartup.InitOpenTelemetryTracing(
@@ -55,6 +66,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("AllowOrigin");
 
 app.UseHttpsRedirection();
 
