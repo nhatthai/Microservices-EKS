@@ -45,6 +45,17 @@ builder.Services.AddOptions<Auth0Settings>();
 builder.Services.Configure<BasketSettings>(configuration);
 builder.Services.Configure<Auth0Settings>(configuration.GetSection("Auth0"));
 
+// Add services to the container.
+builder.Services.AddCors(c =>
+{
+    c.AddPolicy("AllowOrigin", builder =>
+        builder.WithOrigins(configuration.GetValue<string>("OriginWeb"))
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials()
+    );
+});
+
 var auth0Configuration = configuration.GetSection("Auth0").Get<Auth0Settings>();
 
 builder.Services.AddCors(options =>
@@ -125,6 +136,8 @@ if (app.Environment.IsDevelopment())
         setup.EnableDeepLinking();
     });
 }
+
+app.UseCors("AllowOrigin");
 
 app.UseHttpsRedirection();
 
