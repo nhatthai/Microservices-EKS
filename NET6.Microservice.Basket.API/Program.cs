@@ -45,6 +45,18 @@ builder.Services.AddOptions<Auth0Settings>();
 builder.Services.Configure<BasketSettings>(configuration);
 builder.Services.Configure<Auth0Settings>(configuration.GetSection("Auth0"));
 
+var auth0Configuration = configuration.GetSection("Auth0").Get<Auth0Settings>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Auth0", builder =>
+    {
+        builder.AllowAnyOrigin().WithOrigins(auth0Configuration.Authority)
+           .AllowAnyMethod()
+           .AllowAnyHeader();
+    });
+});
+
 // Add services to the container.
 builder.Services.AddCors(c =>
 {
@@ -54,18 +66,6 @@ builder.Services.AddCors(c =>
             .AllowAnyHeader()
             .AllowCredentials()
     );
-});
-
-var auth0Configuration = configuration.GetSection("Auth0").Get<Auth0Settings>();
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("Auth0", builder =>
-    {
-        builder.AllowAnyOrigin().WithOrigins(auth0Configuration.Authority)
-            .AllowAnyMethod()
-            .AllowAnyHeader();
-    });
 });
 
 builder.Services.AddSwaggerGen(options =>
@@ -137,13 +137,13 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseCors("AllowOrigin");
-
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors("Auth0");
+
+//app.UseCors("Auth0");
+app.UseCors("AllowOrigin");
 
 app.MapControllers();
 
