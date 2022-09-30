@@ -74,5 +74,63 @@ namespace NET6.Microservice.Order.API.Controllers
 
             return BadRequest();
         }
+
+        [HttpGet("{orderId:int}")]
+        [ProducesResponseType(typeof(Order), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult> GetOrderAsync(int orderId)
+        {
+            try
+            {
+                //Todo: It's good idea to take advantage of GetOrderByIdQuery and handle by GetCustomerByIdQueryHandler
+                //var order customer = await _mediator.Send(new GetOrderByIdQuery(orderId));
+                var order = await _orderQueries.GetOrderAsync(orderId);
+
+                return Ok(order);
+            }
+            catch
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<OrderSummary>), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<IEnumerable<OrderSummary>>> GetOrdersAsync()
+        {
+            var userid = _identityService.GetUserIdentity();
+            var orders = await _orderQueries.GetOrdersFromUserAsync(Guid.Parse(userid));
+
+            return Ok(orders);
+        }
+
+        [HttpPut("cancel")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> CancelOrderAsync([FromBody] CancelOrderCommand command, [FromHeader(Name = "x-requestid")] string requestId)
+        {
+            bool commandResult = false;
+
+            if (Guid.TryParse(requestId, out Guid guid) && guid != Guid.Empty)
+            {
+                var requestCancelOrder = new IdentifiedCommand<CancelOrderCommand, bool>(command, guid);
+
+                _logger.LogInformation(
+                    "----- Sending command: {CommandName} - {IdProperty}: {CommandId} ({@Command})",
+                    requestCancelOrder.GetGenericTypeName(),
+                    nameof(requestCancelOrder.Command.OrderNumber),
+                    requestCancelOrder.Command.OrderNumber,
+                    requestCancelOrder);
+
+                //commandResult = await _mediator.Send(requestCancelOrder);
+            }
+
+            //if (!commandResult)
+            //{
+            //    return BadRequest();
+            //}
+
+            return Ok();
+        }
     }
 }
