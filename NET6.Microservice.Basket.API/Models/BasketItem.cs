@@ -5,7 +5,7 @@ namespace NET6.Microservice.Basket.API.Models;
 public class BasketItem : IValidatableObject
 {
     public string? Id { get; set; }
-    public string? ProductId { get; set; }
+    public int ProductId { get; set; }
     public string? ProductName { get; set; }
     public decimal UnitPrice { get; set; }
     public decimal OldUnitPrice { get; set; }

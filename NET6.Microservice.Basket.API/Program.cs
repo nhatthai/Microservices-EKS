@@ -52,9 +52,20 @@ builder.Services.AddCors(options =>
     options.AddPolicy("Auth0", builder =>
     {
         builder.AllowAnyOrigin().WithOrigins(auth0Configuration.Authority)
-            .AllowAnyMethod()
-            .AllowAnyHeader();
+           .AllowAnyMethod()
+           .AllowAnyHeader();
     });
+});
+
+// Add services to the container.
+builder.Services.AddCors(c =>
+{
+    c.AddPolicy("AllowOrigin", builder =>
+        builder.WithOrigins(configuration.GetValue<string>("OriginWeb"))
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials()
+    );
 });
 
 builder.Services.AddSwaggerGen(options =>
@@ -130,7 +141,9 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors("Auth0");
+
+//app.UseCors("Auth0");
+app.UseCors("AllowOrigin");
 
 app.MapControllers();
 

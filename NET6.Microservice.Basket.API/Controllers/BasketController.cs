@@ -50,12 +50,13 @@ public class BasketController : ControllerBase
         [FromBody]BasketCheckout basketCheckout, [FromHeader(Name = "x-requestid")] string requestId)
     {
         // var userId = _identityService.GetUserIdentity();
+        var userId = "User1";
         _logger.LogInformation("Checkout Basket {Buyer} {RequestId} {CardHolderName}", basketCheckout.Buyer, requestId, basketCheckout.CardHolderName);
 
         basketCheckout.RequestId = (Guid.TryParse(requestId, out Guid guid) && guid != Guid.Empty) ?
             guid : basketCheckout.RequestId;
 
-        var basket = await _repository.GetBasketAsync("User1");
+        var basket = await _repository.GetBasketAsync(userId);
 
         if (basket == null)
         {
