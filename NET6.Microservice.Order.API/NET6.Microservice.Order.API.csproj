@@ -11,10 +11,13 @@
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'NET6.Microservice.Order.API' " />
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="MediatR" Version="10.0.1" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
     <PackageReference Include="MassTransit.AmazonSQS" Version="8.0.6" />
     <PackageReference Include="MassTransit.AspNetCore" Version="7.3.1" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.0.6" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0" />
     <PackageReference Include="Serilog.Exceptions" Version="8.4.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
     <PackageReference Include="Serilog.Settings.AppSettings" Version="2.2.2" />
@@ -23,15 +26,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Infrastructure\" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="parameters.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
   <ItemGroup>
-    <!-- <ProjectReference Include="..\NET6.Microservice.Catalog.API\NET6.Microservice.Catalog.API.csproj" /> -->
     <ProjectReference Include="..\NET6.Microservice.Core\NET6.Microservice.Core.csproj" />
     <ProjectReference Include="..\NET6.Microservice.Messages\NET6.Microservice.Messages.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Infrastructure\" />
+  </ItemGroup>
 </Project>
