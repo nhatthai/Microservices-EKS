@@ -2,14 +2,15 @@ using System.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using NET6.Microservice.Order.API.Models;
+using NET6.Microservice.Order.API.Domain.AggregateModels.OrderAggregates;
 
 namespace NET6.Microservice.Order.API.Infrastructure;
 
 public class OrderingContext : DbContext
 {
     public const string DEFAULT_SCHEMA = "ordering";
-    public DbSet<NET6.Microservice.Order.API.Models.Order> Orders { get; set; }
-    public DbSet<OrderItem> OrderItems { get; set; }
+    public DbSet<NET6.Microservice.Order.API.Domain.AggregateModels.OrderAggregates.Order> Orders { get; set; }
+    public DbSet<NET6.Microservice.Order.API.Domain.AggregateModels.OrderAggregates.OrderItem> OrderItems { get; set; }
     public DbSet<CardType> CardTypes { get; set; }
 
     private IDbContextTransaction _currentTransaction;

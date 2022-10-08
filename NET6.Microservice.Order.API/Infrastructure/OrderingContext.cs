@@ -2,24 +2,32 @@ using System.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using NET6.Microservice.Order.API.Infrastructure;
-using NET6.Microservice.Order.API.Models;
+using NET6.Microservice.Order.API.Domain.SeedWork;
+using MediatR;
 
 namespace NET6.Microservice.Order.API;
 
-public class OrderingContext : DbContext
+public class OrderingContext : DbContext, IUnitOfWork
 {
     public const string DEFAULT_SCHEMA = "ordering";
-    public DbSet<NET6.Microservice.Order.API.Models.Order> Orders { get; set; }
-    public DbSet<OrderItem> OrderItems { get; set; }
-    public DbSet<CardType> CardTypes { get; set; }
+    public DbSet<Domain.AggregateModels.OrderAggregates.Order> Orders { get; set; }
+    public DbSet<Domain.AggregateModels.OrderAggregates.OrderItem> OrderItems { get; set; }
 
     private IDbContextTransaction _currentTransaction;
+    private readonly IMediator _mediator;
 
     public OrderingContext(DbContextOptions<OrderingContext> options) : base(options) { }
 
     public IDbContextTransaction GetCurrentTransaction() => _currentTransaction;
 
     public bool HasActiveTransaction => _currentTransaction != null;
+
+    public OrderingContext(DbContextOptions<OrderingContext> options, IMediator mediator) : base(options)
+    {
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+
+        System.Diagnostics.Debug.WriteLine("OrderingContext::ctor ->" + this.GetHashCode());
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

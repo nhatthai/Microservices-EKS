@@ -15,7 +15,7 @@ public class OrderRepository : IOrderRepository
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public Order Add(Order order)
+    public Domain.AggregateModels.OrderAggregates.Order Add(Domain.AggregateModels.OrderAggregates.Order order)
     {
         if (order is null)
         {
@@ -26,7 +26,7 @@ public class OrderRepository : IOrderRepository
 
     }
 
-    public async Task<Order> GetAsync(int orderId)
+    public async Task<Domain.AggregateModels.OrderAggregates.Order> GetAsync(int orderId)
     {
         var order = await _context.Orders
             .Include(x => x.Address)
@@ -50,23 +50,8 @@ public class OrderRepository : IOrderRepository
         return order;
     }
 
-    public void Update(NET6.Microservice.Order.API.Models.Order order)
-    {
-        _context.Entry(order).State = EntityState.Modified;
-    }
-
-    public Domain.AggregateModels.OrderAggregates.Order Add(Domain.AggregateModels.OrderAggregates.Order order)
-    {
-        throw new NotImplementedException();
-    }
-
     public void Update(Domain.AggregateModels.OrderAggregates.Order order)
     {
-        throw new NotImplementedException();
-    }
-
-    Task<Domain.AggregateModels.OrderAggregates.Order> IOrderRepository.GetAsync(int orderId)
-    {
-        throw new NotImplementedException();
+        _context.Entry(order).State = EntityState.Modified;
     }
 }
