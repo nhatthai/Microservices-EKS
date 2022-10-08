@@ -7,6 +7,7 @@ namespace NET6.Microservice.Order.API.Infrastructure
 {
     /*
      * Domain-driven design (DDD)
+     * https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/seedwork-domain-model-base-classes-interfaces
      */
     class OrderEntityTypeConfiguration : IEntityTypeConfiguration<NET6.Microservice.Order.API.Models.Order>
     {

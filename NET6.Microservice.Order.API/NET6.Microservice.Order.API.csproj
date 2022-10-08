@@ -32,6 +32,7 @@
     <None Remove="Infrastructure\" />
     <None Remove="Dapper" />
     <None Remove="System.Reflection.TypeExtensions" />
+    <None Remove="Domain\SeedWork\" />
   </ItemGroup>
   <ItemGroup>
     <None Update="parameters.xml">
@@ -46,5 +47,6 @@
 
   <ItemGroup>
     <Folder Include="Infrastructure\" />
+    <Folder Include="Domain\SeedWork\" />
   </ItemGroup>
 </Project>
