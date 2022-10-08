@@ -20,6 +20,7 @@ public record Order
     public string? Country { get; init; }
     public List<OrderItem>? OrderItems { get; set; }
     public decimal Total { get; set; }
+    public string? Address { get; internal set; }
 }
 
 public record OrderSummary

@@ -3,7 +3,7 @@ using NET6.Microservice.Messages.Bases;
 
 namespace NET6.Microservice.Messages.Commands
 {
-    public class Order : BaseMessage
+    public class OrderMessage : BaseMessage
     {
         public Guid OrderId { get; set; }
 

@@ -5,6 +5,9 @@ using NET6.Microservice.Order.API.Models;
 
 namespace NET6.Microservice.Order.API.Infrastructure
 {
+    /*
+     * Domain-driven design (DDD)
+     */
     class OrderEntityTypeConfiguration : IEntityTypeConfiguration<NET6.Microservice.Order.API.Models.Order>
     {
         public void Configure(EntityTypeBuilder<NET6.Microservice.Order.API.Models.Order> orderConfiguration)

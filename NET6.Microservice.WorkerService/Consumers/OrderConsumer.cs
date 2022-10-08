@@ -6,7 +6,7 @@ using OpenTelemetry.Context.Propagation;
 
 namespace NET6.Microservice.WorkerService.Consumers
 {
-    public class OrderConsumer : IConsumer<Messages.Commands.Order>
+    public class OrderConsumer : IConsumer<Messages.Commands.OrderMessage>
     {
         private readonly ILogger<OrderConsumer> _logger;
         private readonly EmailService _emailService;
@@ -19,7 +19,7 @@ namespace NET6.Microservice.WorkerService.Consumers
             _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
         }
 
-        public Task Consume(ConsumeContext<Messages.Commands.Order> context)
+        public Task Consume(ConsumeContext<Messages.Commands.OrderMessage> context)
         {
             var data = context.Message;
             var correlationId = data.CorrelationId;

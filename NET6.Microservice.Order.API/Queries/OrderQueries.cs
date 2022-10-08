@@ -1,11 +1,16 @@
 using NET6.Microservice.Order.API.Models;
-using System.Data.SqlClient;
+using Dapper;
+using Microsoft.Data.SqlClient;
 
 namespace NET6.Microservice.Order.API.Services;
 
+/* 
+ * Domain-driven design (DDD) and Command and Query Responsibility Segregation (CQRS) 
+ * https://learn.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/cqrs-microservice-reads
+ */
 public class OrderQueries : IOrderQueries
 {
-    private string _connectionString = string.Empty;
+    private readonly string _connectionString = string.Empty;
 
     public OrderQueries(string constr)
     {
@@ -21,9 +26,11 @@ public class OrderQueries : IOrderQueries
 
             var result = await connection.QueryAsync<dynamic>(
                 @"select o.[Id] as ordernumber,o.OrderDate as date, o.Description as description,
-                    o.Address_City as city, o.Address_Country as country, o.Address_State as state, o.Address_Street as street, o.Address_ZipCode as zipcode,
+                    o.Address_City as city, o.Address_Country as country, o.Address_State as state,
+                    o.Address_Street as street, o.Address_ZipCode as zipcode,
                     os.Name as status, 
-                    oi.ProductName as productname, oi.Units as units, oi.UnitPrice as unitprice, oi.PictureUrl as pictureurl
+                    oi.ProductName as productname, oi.Units as units, oi.UnitPrice as unitprice,
+                    oi.PictureUrl as pictureurl
                     FROM ordering.Orders o
                     LEFT JOIN ordering.Orderitems oi ON o.Id = oi.orderid 
                     LEFT JOIN ordering.orderstatus os on o.OrderStatusId = os.Id

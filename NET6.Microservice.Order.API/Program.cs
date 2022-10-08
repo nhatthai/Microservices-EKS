@@ -1,4 +1,5 @@
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using NET6.Microservice.Core.OpenTelemetry;
 using NET6.Microservice.Core.PathBases;
 using NET6.Microservice.Messages;
@@ -102,7 +103,7 @@ static void InitMassTransitConfig(IServiceCollection services, IConfiguration co
         }
     });
 
-    EndpointConvention.Map<Order>(new Uri(massTransitConfiguration.OrderQueue));
+    EndpointConvention.Map<OrderMessage>(new Uri(massTransitConfiguration.OrderQueue));
 }
 
 public partial class Program { }
