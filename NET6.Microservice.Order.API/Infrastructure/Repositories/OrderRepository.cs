@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using NET6.Microservice.Order.API.Infastructure.Repositories;
-using NET6.Microservice.Order.API.Models;
+using NET6.Microservice.Order.API.Domain.AggregateModels.OrderAggregates;
+using NET6.Microservice.Order.API.Domain.SeedWork;
 
 namespace NET6.Microservice.Order.API.Infrastructure.Repositories;
 
@@ -8,20 +8,25 @@ public class OrderRepository : IOrderRepository
 {
     private readonly OrderingContext _context;
 
-    //public IUnitOfWork UnitOfWork => _context;
+    public IUnitOfWork UnitOfWork => (IUnitOfWork)_context;
 
     public OrderRepository(OrderingContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public NET6.Microservice.Order.API.Models.Order Add(NET6.Microservice.Order.API.Models.Order order)
+    public Order Add(Order order)
     {
+        if (order is null)
+        {
+            throw new ArgumentNullException(nameof(order));
+        }
+
         return _context.Orders.Add(order).Entity;
 
     }
 
-    public async Task<NET6.Microservice.Order.API.Models.Order> GetAsync(int orderId)
+    public async Task<Order> GetAsync(int orderId)
     {
         var order = await _context.Orders
             .Include(x => x.Address)
@@ -48,5 +53,20 @@ public class OrderRepository : IOrderRepository
     public void Update(NET6.Microservice.Order.API.Models.Order order)
     {
         _context.Entry(order).State = EntityState.Modified;
+    }
+
+    public Domain.AggregateModels.OrderAggregates.Order Add(Domain.AggregateModels.OrderAggregates.Order order)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Update(Domain.AggregateModels.OrderAggregates.Order order)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<Domain.AggregateModels.OrderAggregates.Order> IOrderRepository.GetAsync(int orderId)
+    {
+        throw new NotImplementedException();
     }
 }

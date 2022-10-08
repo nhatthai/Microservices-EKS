@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using NET6.Microservice.Order.API.Models;
+using NET6.Microservice.Order.API.Domain.AggregateModels.OrderAggregates;
 
 namespace NET6.Microservice.Order.API.Infrastructure
 {

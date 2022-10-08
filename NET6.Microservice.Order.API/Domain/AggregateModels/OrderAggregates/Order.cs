@@ -46,8 +46,11 @@ public class Order : Entity, IAggregateRoot
         _isDraft = false;
     }
 
-    public Order(string userId, string userName, Address address, int cardTypeId, string cardNumber, string cardSecurityNumber,
-            string cardHolderName, DateTime cardExpiration, int? buyerId = null, int? paymentMethodId = null) : this()
+    public Order(
+        string userId, string userName, Address address, int cardTypeId,
+        string cardNumber, string cardSecurityNumber,
+        string cardHolderName, DateTime cardExpiration, int? buyerId = null,
+        int? paymentMethodId = null) : this()
     {
         _buyerId = buyerId;
         _paymentMethodId = paymentMethodId;
@@ -57,15 +60,18 @@ public class Order : Entity, IAggregateRoot
 
         // Add the OrderStarterDomainEvent to the domain events collection 
         // to be raised/dispatched when comitting changes into the Database [ After DbContext.SaveChanges() ]
-        AddOrderStartedDomainEvent(userId, userName, cardTypeId, cardNumber,
-                                    cardSecurityNumber, cardHolderName, cardExpiration);
+        AddOrderStartedDomainEvent(
+            userId, userName, cardTypeId, cardNumber,
+            cardSecurityNumber, cardHolderName, cardExpiration);
     }
 
     // DDD Patterns comment
     // This Order AggregateRoot's method "AddOrderitem()" should be the only way to add Items to the Order,
     // so any behavior (discounts, etc.) and validations are controlled by the AggregateRoot 
     // in order to maintain consistency between the whole Aggregate. 
-    public void AddOrderItem(int productId, string productName, decimal unitPrice, decimal discount, string pictureUrl, int units = 1)
+    public void AddOrderItem(
+        int productId, string productName, decimal unitPrice, decimal discount,
+        string pictureUrl, int units = 1)
     {
         var existingOrderForProduct = _orderItems.Where(o => o.ProductId == productId)
             .SingleOrDefault();
