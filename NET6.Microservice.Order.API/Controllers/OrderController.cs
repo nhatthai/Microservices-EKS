@@ -1,8 +1,11 @@
 using System.Diagnostics;
+using System.Net;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using NET6.Microservice.Core.OpenTelemetry;
 using NET6.Microservice.Order.API.Models.Requests;
+using NET6.Microservice.Order.API.Services;
+using NET6.Microservice.Order.API.Models;
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
 
@@ -16,11 +19,13 @@ namespace NET6.Microservice.Order.API.Controllers
         private readonly IBus _bus;
         private static readonly ActivitySource _activitySource = new ActivitySource(nameof(OrderController));
         private static readonly TextMapPropagator Propagator = Propagators.DefaultTextMapPropagator;
+        private readonly IOrderQueries _orderQueries;
 
-        public OrderController(ILogger<OrderController> logger, IBus bus)
+        public OrderController(ILogger<OrderController> logger, IBus bus, IOrderQueries orderQueries)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _bus = bus ?? throw new ArgumentNullException(nameof(logger));
+            _orderQueries = orderQueries ?? throw new ArgumentNullException(nameof(orderQueries));
         }
 
         [HttpGet]
@@ -52,7 +57,7 @@ namespace NET6.Microservice.Order.API.Controllers
 
                 OpenTelemetryActivity.AddActivityTagsMessage(activity);
 
-                await _bus.Send(new Messages.Commands.Order()
+                await _bus.Send(new Messages.Commands.OrderMessage()
                 {
                     OrderId = Guid.NewGuid(),
                     OrderAmount = order.OrderAmount,
@@ -73,6 +78,36 @@ namespace NET6.Microservice.Order.API.Controllers
             activity?.SetStatus(ActivityStatusCode.Error, "Error occurred when sending a message in Post Order API");
 
             return BadRequest();
+        }
+
+        [HttpGet("{orderId:int}")]
+        [ProducesResponseType(typeof(NET6.Microservice.Order.API.Models.Order), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult> GetOrderAsync(int orderId)
+        {
+            try
+            {
+                //Todo: It's good idea to take advantage of GetOrderByIdQuery and handle by GetCustomerByIdQueryHandler
+                //var order customer = await _mediator.Send(new GetOrderByIdQuery(orderId));
+                var order = await _orderQueries.GetOrderAsync(orderId);
+
+                return Ok(order);
+            }
+            catch
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<OrderSummary>), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<IEnumerable<OrderSummary>>> GetOrdersAsync()
+        {
+            //var userid = _identityService.GetUserIdentity();
+            var userId = "asff-23edsffs";
+            var orders = await _orderQueries.GetOrdersFromUserAsync(Guid.Parse(userId));
+
+            return Ok(orders);
         }
     }
 }

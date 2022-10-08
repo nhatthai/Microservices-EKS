@@ -1,8 +1,10 @@
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using NET6.Microservice.Core.OpenTelemetry;
 using NET6.Microservice.Core.PathBases;
 using NET6.Microservice.Messages;
 using NET6.Microservice.Messages.Commands;
+using NET6.Microservice.Order.API;
 using Serilog;
 using Serilog.Exceptions;
 
@@ -34,6 +36,8 @@ builder.Logging.AddSerilog(Log.Logger);
 
 builder.Services.AddOptions<MassTransitConfiguration>().Bind(configuration.GetSection("MassTransit"));
 
+AddCustomDBContext(builder.Services, configuration);
+   
 InitMassTransitConfig(builder.Services, configuration);
 
 var sources = new string[] { "OrderController" };
@@ -57,6 +61,20 @@ app.MapControllers();
 
 app.Run();
 
+static void AddCustomDBContext(IServiceCollection services, IConfiguration configuration)
+{
+    services.AddEntityFrameworkSqlServer().AddDbContext<OrderingContext>(options =>
+    {
+        options.UseSqlServer(configuration["ConnectionString"],
+            sqlServerOptionsAction: sqlOptions =>
+            {
+                //sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+                sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+            });
+    },
+        ServiceLifetime.Scoped  //Showing explicitly that the DbContext is shared across the HTTP request scope (graph of objects started in the HTTP request)
+    );
+}
 
 static void InitMassTransitConfig(IServiceCollection services, IConfiguration configuration)
 {
@@ -85,7 +103,7 @@ static void InitMassTransitConfig(IServiceCollection services, IConfiguration co
         }
     });
 
-    EndpointConvention.Map<Order>(new Uri(massTransitConfiguration.OrderQueue));
+    EndpointConvention.Map<OrderMessage>(new Uri(massTransitConfiguration.OrderQueue));
 }
 
 public partial class Program { }

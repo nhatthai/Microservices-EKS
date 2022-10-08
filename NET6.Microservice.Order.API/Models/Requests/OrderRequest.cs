@@ -8,6 +8,6 @@ namespace NET6.Microservice.Order.API.Models.Requests
         public double OrderAmount { get; set; }
 
         [Required]
-        public string OrderNumber { get; set; }
+        public string? OrderNumber { get; set; }
     }
 }

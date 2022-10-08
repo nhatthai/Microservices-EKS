@@ -84,7 +84,10 @@ static void AddDbContext(IServiceCollection services, IConfiguration configurati
         options.UseSqlServer(configuration["ConnectionStrings:CatalogContext"],  sqlServerOptionsAction: sqlOptions =>
         {
             //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency
-            sqlOptions.EnableRetryOnFailure(maxRetryCount: 15, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 15,
+                maxRetryDelay: TimeSpan.FromSeconds(30), 
+                errorNumbersToAdd: null);
         });
     });
 }
