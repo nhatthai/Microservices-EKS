@@ -1,3 +1,7 @@
+using System.Configuration;
+using Autofac;
+using Autofac.Core;
+using Autofac.Extensions.DependencyInjection;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using NET6.Microservice.Core.OpenTelemetry;
@@ -5,6 +9,10 @@ using NET6.Microservice.Core.PathBases;
 using NET6.Microservice.Messages;
 using NET6.Microservice.Messages.Commands;
 using NET6.Microservice.Order.API;
+using NET6.Microservice.Order.API.Domain.AggregateModels.OrderAggregates;
+using NET6.Microservice.Order.API.Infrastructure;
+using NET6.Microservice.Order.API.Infrastructure.Repositories;
+using NET6.Microservice.Order.API.Queries;
 using Serilog;
 using Serilog.Exceptions;
 
@@ -42,6 +50,22 @@ InitMassTransitConfig(builder.Services, configuration);
 
 var sources = new string[] { "OrderController" };
 OpenTelemetryStartup.InitOpenTelemetryTracing(builder.Services, configuration, "OrderAPI", sources, builder.Environment);
+
+
+// Call UseServiceProviderFactory on the Host sub property 
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+
+// Call ConfigureContainer on the Host sub property 
+builder.Host.ConfigureContainer<ContainerBuilder>(builder =>
+{
+    builder.Register(c => new OrderQueries(configuration["ConnectionString"]))
+            .As<IOrderQueries>()
+            .InstancePerLifetimeScope();
+
+    builder.RegisterType<OrderRepository>()
+        .As<IOrderRepository>()
+        .InstancePerLifetimeScope();
+});
 
 // Add the IStartupFilter using the helper method
 PathBaseStartup.AddPathBaseFilter(builder);

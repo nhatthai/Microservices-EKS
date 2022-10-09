@@ -5,7 +5,7 @@ using NET6.Microservice.Order.API.Infrastructure;
 using NET6.Microservice.Order.API.Domain.SeedWork;
 using MediatR;
 
-namespace NET6.Microservice.Order.API;
+namespace NET6.Microservice.Order.API.Infrastructure;
 
 public class OrderingContext : DbContext, IUnitOfWork
 {

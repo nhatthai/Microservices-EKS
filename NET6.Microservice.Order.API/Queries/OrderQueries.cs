@@ -2,7 +2,7 @@ using NET6.Microservice.Order.API.Models;
 using Dapper;
 using Microsoft.Data.SqlClient;
 
-namespace NET6.Microservice.Order.API.Services;
+namespace NET6.Microservice.Order.API.Queries;
 
 /* 
  * Domain-driven design (DDD) and Command and Query Responsibility Segregation (CQRS) 

@@ -1,6 +1,6 @@
 using NET6.Microservice.Order.API.Models;
 
-namespace NET6.Microservice.Order.API.Services;
+namespace NET6.Microservice.Order.API.Queries;
 
 public interface IOrderQueries
 {
