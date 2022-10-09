@@ -4,7 +4,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using NET6.Microservice.Core.OpenTelemetry;
 using NET6.Microservice.Order.API.Models.Requests;
-using NET6.Microservice.Order.API.Services;
+using NET6.Microservice.Order.API.Queries;
 using NET6.Microservice.Order.API.Models;
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
@@ -29,12 +29,15 @@ namespace NET6.Microservice.Order.API.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<string> Get()
+        [ProducesResponseType(typeof(IEnumerable<OrderSummary>), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<IEnumerable<OrderSummary>>> GetOrdersAsync()
         {
-            _logger.LogInformation("Get Order API");
-            return new List<string>();
-        }
+            var userId = Guid.NewGuid();
+            var orders = await _orderQueries.GetOrdersFromUserAsync(userId);
 
+            return Ok(orders);
+        }
+        
         [HttpPost]
         public async Task<IActionResult> OrderProduct(OrderRequest order)
         {
@@ -99,15 +102,6 @@ namespace NET6.Microservice.Order.API.Controllers
             }
         }
 
-        [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<OrderSummary>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IEnumerable<OrderSummary>>> GetOrdersAsync()
-        {
-            //var userid = _identityService.GetUserIdentity();
-            var userId = "asff-23edsffs";
-            var orders = await _orderQueries.GetOrdersFromUserAsync(Guid.Parse(userId));
-
-            return Ok(orders);
-        }
+        
     }
 }
