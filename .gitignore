@@ -5,3 +5,8 @@
 */bin/*
 
 logs/*
+*/terraform/.terraform.lock.hcl
+*/terraform/.terraform.tfstate
+*/terraform/.terraform.tfstate.lock.info
+*/terraform/.terraform/*
+*/terraform/terraform.tfstate
