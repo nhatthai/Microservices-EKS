@@ -10,7 +10,7 @@ env:
   AWS_REGION: 'ap-southeast-1'
   ECR_REGISTRY_NAME: '783560535431.dkr.ecr.ap-southeast-1.amazonaws.com'
   ECR_REPOSITORY: 'catalog-api'
-  EKS_CLUSTER: 'microservice-eks-b3amei5h'
+  EKS_CLUSTER: 'microservice-eks-WHlr157J'
 
 jobs:
   build:
