@@ -78,15 +78,8 @@ jobs:
     - run: |
         aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name ${{ env.EKS_CLUSTER }}
 
-    # Set image tag into catalog-api.yml
-    - uses: swdotcom/update-and-apply-kubernetes-configs@v1
-      with:
-        k8-config-file-paths: |
-          devops/k8s/catalog-api.yml
-        replacement-method: defined
-      env:
-        IMAGE_TAG: ${{ github.sha }}
-
-    - name: Deploy catalog api to EKS
-      run: |
-        kubectl apply -f devops/k8s/catalog-api.yml
+    # Set image tag into webapi.yml and deploy
+    - run: |
+        export IMAGE_TAG=${{ github.sha }}
+        echo $IMAGE_TAG
+        cat devops/k8s/catalog-api.yml | sed "s/{{IMAGE_TAG}}/$IMAGE_TAG/g" | kubectl apply -f -
