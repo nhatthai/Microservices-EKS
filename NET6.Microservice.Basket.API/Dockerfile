@@ -7,8 +7,8 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 
-COPY ["../NET6.Microservice.Core/NET6.Microservice.Core.csproj", "NET6.Microservice.Core/NET6.Microservice.Core.csproj"]
-COPY ["../NET6.Microservice.Messages/NET6.Microservice.Messages.csproj", "NET6.Microservice.Messages/NET6.Microservice.Messages.csproj"]
+COPY ["NET6.Microservice.Core/NET6.Microservice.Core.csproj", "NET6.Microservice.Core/NET6.Microservice.Core.csproj"]
+COPY ["NET6.Microservice.Messages/NET6.Microservice.Messages.csproj", "NET6.Microservice.Messages/NET6.Microservice.Messages.csproj"]
 
 COPY ["NET6.Microservice.Basket.API/NET6.Microservice.Basket.API.csproj", "NET6.Microservice.Basket.API/"]
 RUN dotnet restore "NET6.Microservice.Basket.API/NET6.Microservice.Basket.API.csproj"
