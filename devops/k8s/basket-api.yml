@@ -1,0 +1,50 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: basket-api
+  labels:
+    app: basketapi
+spec:
+  selector:
+    app: basketapi
+  ports:
+  - protocol: TCP
+    port: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: basket-api
+  labels:
+    app: basketapi
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: basketapi
+  template:
+    metadata:
+      labels:
+        app: basketapi
+    spec:
+      containers:
+      - name: basketapi
+        image: 783560535431.dkr.ecr.ap-southeast-1.amazonaws.com/basket-api:{{IMAGE_TAG}}
+        imagePullPolicy: Always
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: TEST
+        - name: ASPNETCORE_URLS
+          value: http://0.0.0.0:80
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m

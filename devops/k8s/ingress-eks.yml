@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    app: ingress
+    component: frontend
+  name: ingress-webapi
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    # your subnets of instance
+    alb.ingress.kubernetes.io/subnets: subnet-f80bae8e, subnet-ef4ae18b, subnet-a24866e4
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /catalog-api
+        pathType: Prefix
+        backend:
+          service:
+            name: catalog-api
+            port:
+              number: 80
+      - path: /basket-api
+        pathType: Prefix
+        backend:
+          service:
+            name: basket-api
+            port:
+              number: 80
+
+      - path: /order-api
+        pathType: Prefix
+        backend:
+          service:
+            name: order-api
+            port:
+              number: 80
