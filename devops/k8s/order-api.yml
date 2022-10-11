@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
       - name: orderapi
-        image: 783560535431.dkr.ecr.ap-southeast-1.amazonaws.com/order-api:{{IMAGE_TAG}}
+        image: 783560535431.dkr.ecr.ap-southeast-1.amazonaws.com/order-api:${IMAGE_TAG}
         imagePullPolicy: Always
         env:
         - name: ASPNETCORE_ENVIRONMENT
