@@ -1,4 +1,4 @@
-name: .NET Order API
+name: .NET Basket API
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 env:
   AWS_REGION: 'ap-southeast-1'
   ECR_REGISTRY_NAME: '783560535431.dkr.ecr.ap-southeast-1.amazonaws.com'
-  ECR_REPOSITORY: 'order-api'
+  ECR_REPOSITORY: 'basket-api'
   EKS_CLUSTER: 'microservice-eks-b3amei5h'
 
 jobs:
@@ -53,7 +53,7 @@ jobs:
         IMAGE_TAG: ${{ github.sha }}
       run: |
         # Build a docker container and push it to ECR
-        docker build -f NET6.Microservice.Order.API/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker build -f NET6.Microservice.Basket.API/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         echo "Pushing image to ECR..."
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
@@ -82,4 +82,16 @@ jobs:
     - run: |
         export IMAGE_TAG=${{ github.sha }}
         echo $IMAGE_TAG
-        cat devops/k8s/order-api.yml | sed "s/{{IMAGE_TAG}}/$IMAGE_TAG/g" | kubectl apply -f -
+        cat devops/k8s/basket-api.yml | sed "s/{{IMAGE_TAG}}/$IMAGE_TAG/g" | kubectl apply -f -
+
+    - uses: swdotcom/update-and-apply-kubernetes-configs@v1
+      with:
+        k8-config-file-paths: |
+          devops/k8s/basket-api.yml
+        replacement-method: defined
+      env:
+        IMAGE_TAG: ${{ github.sha }}
+
+    - name: Deploy basket api to EKS
+      run: |
+        kubectl apply -f devops/k8s/basket-api.yml
