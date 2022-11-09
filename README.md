@@ -42,6 +42,17 @@ Sample Microservice on EKS, using Github Actions for deployment to EKS
 
 + Get logging AWS Load Balancer Controller
 
+### Apply Terraform
++ Init Infrastructure
+    ```
+    terraform init
+    terraform apply
+    ```
+
++ Terraform will create a role name with aws-load-balancer-controller name
+    + It creates a service account(aws-load-balancer-controller)
+    + It sets permission
+    + It sets Trust relationships(aws/load-balancer-role-trust-policy)
 
 ### References
 + [Using W3C Trace Context standard in distributed tracing](https://dev.to/luizhlelis/c-using-w3c-trace-context-standard-in-distributed-tracing-1nm0)

@@ -78,8 +78,8 @@ jobs:
     - run: |
         aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name ${{ env.EKS_CLUSTER }}
 
-    # Set image tag into webapi.yml and deploy
+    # Set image tag into basket-api.yml and deploy
     - run: |
         export IMAGE_TAG=${{ github.sha }}
-        echo $IMAGE_TAG
-        cat devops/k8s/basket-api.yml | sed "s/{{IMAGE_TAG}}/$IMAGE_TAG/g" | kubectl apply -f -
+        envsubst < devops/k8s/basket-api.yml > basket-api.yml
+        kubectl apply -f basket-api.yml

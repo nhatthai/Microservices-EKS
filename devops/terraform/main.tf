@@ -1,6 +1,11 @@
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_id]
+    command     = "aws"
+  }
 }
 
 provider "aws" {
@@ -12,10 +17,19 @@ provider "aws" {
 data "aws_availability_zones" "available" {}
 
 locals {
-  cluster_name = "microservice-eks-${random_string.suffix.result}"
+  cluster_name = "microservice-eks"
+  account_id = "783560535431"
 }
 
-resource "random_string" "suffix" {
-  length  = 8
-  special = false
+provider "helm" {
+  kubernetes {
+    host                   = module.eks.cluster_endpoint
+    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+
+    exec {
+      api_version = "client.authentication.k8s.io/v1beta1"
+      args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_id]
+      command     = "aws"
+    }
+  }
 }
