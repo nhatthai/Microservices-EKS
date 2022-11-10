@@ -11,7 +11,6 @@ using OpenTelemetry;
 namespace NET6.Microservice.Basket.API.Controllers;
 
 [Route("api/v1/[controller]")]
-[Authorize]
 [ApiController]
 public class BasketController : ControllerBase
 {
@@ -32,11 +31,10 @@ public class BasketController : ControllerBase
     {
         _logger.LogInformation("Get Basket");
 
-        using var activity = _activitySource.StartActivity("Order.Product Send", ActivityKind.Producer);
+        using var activity = _activitySource.StartActivity("Get basket", ActivityKind.Producer);
 
-        _logger.LogInformation("Get Order");
         OpenTelemetryActivity.AddActivityTagsMessage(activity);
-        activity?.SetStatus(ActivityStatusCode.Ok, "Get Order successfully.");
+        activity?.SetStatus(ActivityStatusCode.Ok, "Get Basket successfully.");
 
         return Ok("Get basket");
     }
