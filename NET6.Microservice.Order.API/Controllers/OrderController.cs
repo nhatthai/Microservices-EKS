@@ -29,15 +29,31 @@ namespace NET6.Microservice.Order.API.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<OrderSummary>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IEnumerable<OrderSummary>>> GetOrdersAsync()
+        public async Task<ActionResult> GetOrdersAsync()
         {
-            var userId = Guid.NewGuid();
-            var orders = await _orderQueries.GetOrdersFromUserAsync(userId);
+            // var userId = Guid.NewGuid();
+            // var orders = await _orderQueries.GetOrdersFromUserAsync(userId);
 
-            return Ok(orders);
+            // return Ok(orders);
+            using var activity = _activitySource.StartActivity("Order.Product Send", ActivityKind.Producer);
+
+            _logger.LogInformation("Get Order");
+            OpenTelemetryActivity.AddActivityTagsMessage(activity);
+            activity?.SetStatus(ActivityStatusCode.Ok, "Get Order successfully.");
+
+            return Ok("Get Order");
         }
-        
+
+        // [HttpGet]
+        // [ProducesResponseType(typeof(IEnumerable<OrderSummary>), (int)HttpStatusCode.OK)]
+        // public async Task<ActionResult<IEnumerable<OrderSummary>>> GetOrdersAsync()
+        // {
+        //     var userId = Guid.NewGuid();
+        //     var orders = await _orderQueries.GetOrdersFromUserAsync(userId);
+
+        //     return Ok(orders);
+        // }
+
         [HttpPost]
         public async Task<IActionResult> OrderProduct(OrderRequest order)
         {
@@ -102,6 +118,6 @@ namespace NET6.Microservice.Order.API.Controllers
             }
         }
 
-        
+
     }
 }

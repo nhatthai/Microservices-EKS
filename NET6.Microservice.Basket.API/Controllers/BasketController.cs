@@ -1,8 +1,12 @@
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NET6.Microservice.Core.OpenTelemetry;
 using NET6.Microservice.Basket.API.Infrastructure.Repositories;
 using NET6.Microservice.Basket.API.Models;
+using System.Diagnostics;
 using System.Net;
+using OpenTelemetry;
 
 namespace NET6.Microservice.Basket.API.Controllers;
 
@@ -13,12 +17,27 @@ public class BasketController : ControllerBase
 {
     private readonly IBasketRepository _repository;
     private readonly ILogger<BasketController> _logger;
+    private static readonly ActivitySource _activitySource = new ActivitySource(nameof(BasketController));
 
     public BasketController(
         ILogger<BasketController> logger, IBasketRepository repository)
     {
         _logger = logger;
         _repository = repository;
+    }
+
+    [HttpGet()]
+    public async Task<ActionResult> GetBaskets()
+    {
+        _logger.LogInformation("Get Basket");
+
+        using var activity = _activitySource.StartActivity("Order.Product Send", ActivityKind.Producer);
+
+        _logger.LogInformation("Get Order");
+        OpenTelemetryActivity.AddActivityTagsMessage(activity);
+        activity?.SetStatus(ActivityStatusCode.Ok, "Get Order successfully.");
+
+        return Ok("Get basket");
     }
 
     [HttpGet("{id}")]
