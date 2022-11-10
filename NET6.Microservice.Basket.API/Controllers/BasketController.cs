@@ -27,6 +27,7 @@ public class BasketController : ControllerBase
     }
 
     [HttpGet()]
+    [AllowAnonymous]
     public async Task<ActionResult> GetBaskets()
     {
         _logger.LogInformation("Get Basket");
