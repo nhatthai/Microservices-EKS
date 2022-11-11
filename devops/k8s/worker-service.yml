@@ -1,12 +1,12 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: basket-api
+  name: worker-service
   labels:
-    app: basketapi
+    app: workerservice
 spec:
   selector:
-    app: basketapi
+    app: workerservice
   ports:
   - protocol: TCP
     port: 80
@@ -15,9 +15,9 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: basket-api
+  name: worker-service
   labels:
-    app: basketapi
+    app: workerservice
 spec:
   replicas: 1
   strategy:
@@ -26,15 +26,15 @@ spec:
       maxUnavailable: 1
   selector:
     matchLabels:
-      app: basketapi
+      app: workerservice
   template:
     metadata:
       labels:
-        app: basketapi
+        app: workerservice
     spec:
       containers:
-      - name: basketapi
-        image: 783560535431.dkr.ecr.ap-southeast-1.amazonaws.com/basket-api:${IMAGE_TAG}
+      - name: workerservice
+        image: 783560535431.dkr.ecr.ap-southeast-1.amazonaws.com/worker-service:${IMAGE_TAG}
         imagePullPolicy: Always
         env:
         - name: DOTNET_ENVIRONMENT
@@ -43,17 +43,12 @@ spec:
               name: microservice-configmap
               key: DOTNET_ENVIRONMENT
 
-        - name: ASPNETCORE_URLS
-          valueFrom:
-            configMapKeyRef:
-              name: microservice-configmap
-              key: ASPNETCORE_URLS
-
-       - name: MassTransit:MessageBusRabbitMQ
+        - name: MassTransit:MessageBusRabbitMQ
           valueFrom:
             secretKeyRef:
               name: microservice-basic-auth-secret
               key: MessageBus_RabbitMQ
+
         ports:
         - containerPort: 80
         resources:
