@@ -9,16 +9,9 @@ provider "kubernetes" {
 }
 
 provider "aws" {
-  region  = "ap-southeast-1"
-  access_key = ""
-  secret_key = ""
-}
-
-data "aws_availability_zones" "available" {}
-
-locals {
-  cluster_name = "microservice-eks"
-  account_id = "783560535431"
+  region  = var.aws_region
+  access_key = var.aws_access_key
+  secret_key = var.aws_secret_key
 }
 
 provider "helm" {
@@ -32,4 +25,11 @@ provider "helm" {
       command     = "aws"
     }
   }
+}
+
+data "aws_availability_zones" "available" {}
+
+locals {
+  cluster_name = var.eks_cluster_name
+  account_id = var.aws_account_id
 }

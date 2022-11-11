@@ -44,7 +44,7 @@ resource "helm_release" "alb" {
 
   set {
     name  = "region"
-    value = var.region
+    value = var.aws_region
   }
 
   set {
