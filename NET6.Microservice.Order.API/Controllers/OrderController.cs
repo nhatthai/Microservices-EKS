@@ -31,10 +31,6 @@ namespace NET6.Microservice.Order.API.Controllers
         [HttpGet]
         public async Task<ActionResult> GetOrdersAsync()
         {
-            // var userId = Guid.NewGuid();
-            // var orders = await _orderQueries.GetOrdersFromUserAsync(userId);
-
-            // return Ok(orders);
             using var activity = _activitySource.StartActivity("Order.Product Send", ActivityKind.Producer);
 
             _logger.LogInformation("Get Order");

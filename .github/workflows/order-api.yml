@@ -82,4 +82,6 @@ jobs:
     - run: |
         export IMAGE_TAG=${{ github.sha }}
         envsubst < devops/k8s/order-api.yml > order-api.yml
+        kubectl apply -f configmap.yml
+        kubectl apply -f secret.yml
         kubectl apply -f order-api.yml

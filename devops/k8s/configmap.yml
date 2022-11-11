@@ -8,3 +8,4 @@ data:
   ASPNETCORE_ENVIRONMENT: "TEST"
   ASPNETCORE_URLS: "http://0.0.0.0:80"
   DOTNET_ENVIRONMENT: "TEST"
+  MessageBus_RabbitMQ: amqp://admin:password@rabbitmq:5671/

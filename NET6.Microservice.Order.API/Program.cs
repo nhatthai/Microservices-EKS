@@ -45,17 +45,17 @@ builder.Logging.AddSerilog(Log.Logger);
 builder.Services.AddOptions<MassTransitConfiguration>().Bind(configuration.GetSection("MassTransit"));
 
 AddCustomDBContext(builder.Services, configuration);
-   
+
 InitMassTransitConfig(builder.Services, configuration);
 
 var sources = new string[] { "OrderController" };
 OpenTelemetryStartup.InitOpenTelemetryTracing(builder.Services, configuration, "OrderAPI", sources, builder.Environment);
 
 
-// Call UseServiceProviderFactory on the Host sub property 
+// Call UseServiceProviderFactory on the Host sub property
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 
-// Call ConfigureContainer on the Host sub property 
+// Call ConfigureContainer on the Host sub property
 builder.Host.ConfigureContainer<ContainerBuilder>(builder =>
 {
     builder.Register(c => new OrderQueries(configuration["ConnectionString"]))
