@@ -48,12 +48,6 @@ spec:
             configMapKeyRef:
               name: microservice-configmap
               key: ASPNETCORE_URLS
-
-       - name: MassTransit:MessageBusRabbitMQ
-          valueFrom:
-            secretKeyRef:
-              name: microservice-basic-auth-secret
-              key: MessageBus_RabbitMQ
         ports:
         - containerPort: 80
         resources:
