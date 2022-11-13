@@ -2,7 +2,6 @@ apiVersion: opentelemetry.io/v1alpha1
 kind: OpenTelemetryCollector
 metadata:
   name: my-collector-xray
-  namespace: aws-otel-eks
 spec:
   mode: deployment
   serviceAccount: adot-collector
