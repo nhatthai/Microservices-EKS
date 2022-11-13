@@ -2,7 +2,7 @@
 Sample Microservice on EKS, using Github Actions for deployment to EKS
 
 ## Goals
-+ Using Terraform: create Infrastructure in EKS
++ Using Terraform: create Infrastructure
 + Deploy microservice on AWS EKS with Github Actions
 + Message Bus with RabbitMQ and SQS
 + Integrate OpenTelemetry for tracing and metrics between services
@@ -37,26 +37,38 @@ Sample Microservice on EKS, using Github Actions for deployment to EKS
     ```
     kubectl apply -f https://amazon-eks.s3.amazonaws.com/docs/addons-otel-permissions.yaml
     ```
+
++ [Create an IAM OIDC provider and service account for cluster] 
+(https://docs.aws.amazon.com/eks/latest/userguide/adot-iam.html)
+    - Create an IAM OIDC
+    - Set Policy for Service Account
+        ```
+        eksctl create iamserviceaccount \
+        --name adot-collector \
+        --namespace default \
+        --cluster microservice-eks \
+        --attach-policy-arn arn:aws:iam::aws:policy/AmazonPrometheusRemoteWriteAccess \
+        --attach-policy-arn arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess \
+        --attach-policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy \
+        --approve \
+        --override-existing-serviceaccounts
+        ```
+
 + Add Add-On in EKS
     ```
     aws eks create-addon --addon-name adot --cluster-name microservice-eks
     ```
+
 + Check Add-On
     ```
     aws eks describe-addon --addon-name adot --cluster-name microservice-eks
     ```
 
-+ Create an IAM OIDC provider for cluster
++ Deploy ADOT Collector
     ```
-    eksctl create iamserviceaccount \
-    --name adot-collector \
-    --namespace default \
-    --cluster microservice-eks \
-    --attach-policy-arn arn:aws:iam::aws:policy/AmazonPrometheusRemoteWriteAccess \
-    --attach-policy-arn arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess \
-    --attach-policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy \
-    --approve \
-    --override-existing-serviceaccounts
+    kubectl apply -f k8s/opentelemetry/collector-config-amp.yml
+    kubectl apply -f k8s/opentelemetry/collector-config-cloudwatch.yml
+    kubectl apply -f k8s/opentelemetry/collector-config-xray.yml
     ```
 
 ### References
