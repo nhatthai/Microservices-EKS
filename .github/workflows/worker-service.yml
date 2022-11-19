@@ -81,7 +81,10 @@ jobs:
     # Set image tag into worker service and deploy
     - run: |
         export IMAGE_TAG=${{ github.sha }}
-        export AmazonSQS='${{ secrets.AWS_ACCESS_KEY_ID }}:${{ secrets.AWS_SECRET_ACCESS_KEY }}@${{ env.AWS_REGION }}' | base64
+        export AmazonSQS=$(echo -n '${{ secrets.AWS_ACCESS_KEY_ID }}:${{ secrets.AWS_SECRET_ACCESS_KEY }}@${{ env.AWS_REGION }}' | base64)
+        export AwsAccessKey=$(echo -n '${{ secrets.AWS_ACCESS_KEY_ID }}' | base64)
+        export AwsSecretKey=$(echo -n '${{ secrets.AWS_SECRET_ACCESS_KEY }}' | base64)
+        export AwsRegion=$(echo -n '${{ env.AWS_REGION }}' | base64)
         envsubst < devops/k8s/worker-service.yml > worker-service.yml
         envsubst < devops/k8s/secret.yml > secret.yml
         kubectl apply -f devops/k8s/configmap.yml

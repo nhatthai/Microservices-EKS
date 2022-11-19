@@ -49,11 +49,21 @@ spec:
               name: microservice-configmap
               key: ASPNETCORE_URLS
         
-        - name: MassTransit__MessageBusSQS
+        - name: MassTransit__AwsAccessKey
           valueFrom:
             secretKeyRef:
               name: microservice-basic-auth-secret
-              key: MessageBus_SQS
+              key: AwsAccessKey
+        - name: MassTransit__AwsSecretKey
+          valueFrom:
+            secretKeyRef:
+              name: microservice-basic-auth-secret
+              key: AwsSecretKey
+        - name: MassTransit__AwsRegion
+          valueFrom:
+            secretKeyRef:
+              name: microservice-basic-auth-secret
+              key: AwsRegion
         - name: MassTransit__IsUsingAmazonSQS
           value: "true"
         - name: MassTransit__IsUsingRabbitMQ
