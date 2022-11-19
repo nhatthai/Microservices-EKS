@@ -81,8 +81,9 @@ jobs:
     # Set image tag into order-api.yml and deploy
     - run: |
         export IMAGE_TAG=${{ github.sha }}
-        export AmazonSQS=${{ secrets.AWS_ACCESS_KEY_ID }}:${{ secrets.AWS_SECRET_ACCESS_KEY }}@${{ env.AWS_REGION }}
+        export AmazonSQS='${{ secrets.AWS_ACCESS_KEY_ID }}:${{ secrets.AWS_SECRET_ACCESS_KEY }}@${{ env.AWS_REGION }}' | base64
         envsubst < devops/k8s/order-api.yml > order-api.yml
+        envsubst < devops/k8s/secret.yml > secret.yml
         kubectl apply -f devops/k8s/configmap.yml
-        kubectl apply -f devops/k8s/secret.yml
+        kubectl apply -f secret.yml
         kubectl apply -f order-api.yml
