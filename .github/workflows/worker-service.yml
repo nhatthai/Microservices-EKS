@@ -78,11 +78,15 @@ jobs:
     - run: |
         aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name ${{ env.EKS_CLUSTER }}
 
-    # Set image tag into order-api.yml and deploy
+    # Set image tag into worker service and deploy
     - run: |
         export IMAGE_TAG=${{ github.sha }}
+        export AmazonSQS=${{ secrets.AWS_ACCESS_KEY_ID }}:${{ secrets.AWS_SECRET_ACCESS_KEY }}@${{ env.AWS_REGION }}
         envsubst < devops/k8s/worker-service.yml > worker-service.yml
         kubectl apply -f devops/k8s/configmap.yml
         kubectl apply -f devops/k8s/secret.yml
         kubectl apply -f worker-service.yml
-        
+      # env:
+      #   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #   aws-region: ${{ env.AWS_REGION }}
