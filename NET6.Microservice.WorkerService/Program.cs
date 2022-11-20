@@ -71,9 +71,10 @@ static void InitMassTransitConfig(IServiceCollection services, IConfiguration co
         {
             configureMassTransit.UsingAmazonSqs((context, configure) =>
             {
-                var messageBusSQS = massTransitConfiguration.AwsAccessKey + ":" + 
-                                    massTransitConfiguration.AwsSecretKey + "@" + 
-                                    massTransitConfiguration.AwsRegion;
+                var messageBusSQS = String.Format("{0}:{1}@{2}",
+                    massTransitConfiguration.AwsAccessKey, 
+                    massTransitConfiguration.AwsSecretKey,
+                    massTransitConfiguration.AwsRegion);
                 ServiceBusConnectionConfig.ConfigureNodes(configure,  messageBusSQS);
 
                 configure.ReceiveEndpoint(massTransitConfiguration.OrderQueue, receive =>
