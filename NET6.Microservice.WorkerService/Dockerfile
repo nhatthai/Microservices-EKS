@@ -20,5 +20,6 @@ RUN dotnet publish "NET6.Microservice.WorkerService.csproj" -c Release -o /app/p
 
 FROM base AS final
 WORKDIR /app
+RUN mkdir -p /app/logs
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "NET6.Microservice.WorkerService.dll"]

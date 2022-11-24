@@ -19,5 +19,6 @@ RUN dotnet publish "NET6.Microservice.Order.API.csproj" -c Release -o /app/publi
 
 FROM base AS final
 WORKDIR /app
+MKDIR /app/logs
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "NET6.Microservice.Order.API.dll"]
