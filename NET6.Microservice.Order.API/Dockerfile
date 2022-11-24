@@ -1,5 +1,6 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
+RUN mkdir -p /app/logs
 EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
@@ -19,6 +20,5 @@ RUN dotnet publish "NET6.Microservice.Order.API.csproj" -c Release -o /app/publi
 
 FROM base AS final
 WORKDIR /app
-MKDIR /app/logs
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "NET6.Microservice.Order.API.dll"]
