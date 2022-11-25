@@ -57,25 +57,27 @@ static void InitMassTransitConfig(IServiceCollection services, IConfiguration co
 
     services.AddMassTransit(configureMassTransit =>
     {
-        configureMassTransit.AddConsumer<OrderConsumer>(configureConsumer =>
-        {
-            configureConsumer.UseConcurrentMessageLimit(2);
-        });
-
         if (massTransitConfiguration == null)
         {
             throw new ArgumentNullException("MassTransit config is null");
         }
+
+        configureMassTransit.AddConsumer<OrderConsumer>(configureConsumer =>
+        {
+            configureConsumer.UseConcurrentMessageLimit(2);
+        });
 
         if (massTransitConfiguration.IsUsingAmazonSQS)
         {
             configureMassTransit.UsingAmazonSqs((context, configure) =>
             {
                 var messageBusSQS = String.Format("{0}:{1}@{2}",
-                    massTransitConfiguration.AwsAccessKey, 
+                    massTransitConfiguration.AwsAccessKey,
                     massTransitConfiguration.AwsSecretKey,
                     massTransitConfiguration.AwsRegion);
                 ServiceBusConnectionConfig.ConfigureNodes(configure,  messageBusSQS);
+
+                //configure.ConfigureEndpoints(context);
 
                 configure.ReceiveEndpoint(massTransitConfiguration.OrderQueue, receive =>
                 {

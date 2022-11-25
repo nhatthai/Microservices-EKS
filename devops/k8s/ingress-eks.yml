@@ -10,7 +10,7 @@ metadata:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     # your subnets of instance, public subnets of EKS
-    alb.ingress.kubernetes.io/subnets: subnet-074701c6e8779fb44,subnet-087a5c59991c0bf93,subnet-0fd7f133f8867928a
+    alb.ingress.kubernetes.io/subnets: subnet-0093fb575ee1d37aa,subnet-0042256c83c9feff1,subnet-0eb3f45b67fbb5d31
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
     alb.ingress.kubernetes.io/security-groups: 'eks-alb'
 spec:

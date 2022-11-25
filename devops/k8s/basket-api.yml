@@ -42,12 +42,32 @@ spec:
             configMapKeyRef:
               name: microservice-configmap
               key: DOTNET_ENVIRONMENT
-
         - name: ASPNETCORE_URLS
           valueFrom:
             configMapKeyRef:
               name: microservice-configmap
               key: ASPNETCORE_URLS
+        - name: MassTransit__AwsAccessKey
+          valueFrom:
+            secretKeyRef:
+              name: microservice-basic-auth-secret
+              key: AwsAccessKey
+        - name: MassTransit__AwsSecretKey
+          valueFrom:
+            secretKeyRef:
+              name: microservice-basic-auth-secret
+              key: AwsSecretKey
+        - name: MassTransit__AwsRegion
+          valueFrom:
+            secretKeyRef:
+              name: microservice-basic-auth-secret
+              key: AwsRegion
+        - name: MassTransit__IsUsingAmazonSQS
+          value: "true"
+        - name: MassTransit__IsUsingRabbitMQ
+          value: "false"
+        - name: Serilog__WriteTo__0__Args__path
+          value: "./logs/NET6.Microservice.Basket.API.logs.json"
         ports:
         - containerPort: 80
         resources:

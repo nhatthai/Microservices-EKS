@@ -109,12 +109,14 @@ static void InitMassTransitConfig(IServiceCollection services, IConfiguration co
 
     services.AddMassTransit(configureMassTransit =>
     {
+        configureMassTransit.SetKebabCaseEndpointNameFormatter();
+
         if(massTransitConfiguration.IsUsingAmazonSQS)
         {
             configureMassTransit.UsingAmazonSqs((context, configure) =>
             {
                 var messageBusSQS = String.Format("{0}:{1}@{2}",
-                    massTransitConfiguration.AwsAccessKey, 
+                    massTransitConfiguration.AwsAccessKey,
                     massTransitConfiguration.AwsSecretKey,
                     massTransitConfiguration.AwsRegion);
                 ServiceBusConnectionConfig.ConfigureNodes(configure, messageBusSQS);

@@ -295,7 +295,7 @@ spec:
         timeout: 60s
     exporters:
       prometheusremotewrite:
-        endpoint: https://aps-workspaces.ap-southeast-1.amazonaws.com/workspaces/ws-5789e54e-4c5f-44cd-8904-5c3b0327d49f/api/v1/remote_write
+        endpoint: https://aps-workspaces.ap-southeast-1.amazonaws.com/workspaces/ws-c074e0ce-2051-4455-97dc-bde6abe55c25/api/v1/remote_write
         auth:
           authenticator: sigv4auth
     service:

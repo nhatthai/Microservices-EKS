@@ -48,7 +48,7 @@ spec:
             configMapKeyRef:
               name: microservice-configmap
               key: ASPNETCORE_URLS
-        
+
         - name: MassTransit__AwsAccessKey
           valueFrom:
             secretKeyRef:
@@ -68,7 +68,8 @@ spec:
           value: "true"
         - name: MassTransit__IsUsingRabbitMQ
           value: "false"
-          
+        - name: Serilog__WriteTo__0__Args__path
+          value: "./logs/NET6.Microservice.Order.API.logs.json"
         ports:
         - containerPort: 80
         resources:

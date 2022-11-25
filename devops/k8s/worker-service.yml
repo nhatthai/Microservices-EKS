@@ -62,6 +62,8 @@ spec:
           value: "true"
         - name: MassTransit__IsUsingRabbitMQ
           value: "false"
+        - name: Serilog__WriteTo__0__Args__path
+          value: "./logs/NET6.Microservice.WorkerService.logs.json"
         ports:
         - containerPort: 80
         resources:
