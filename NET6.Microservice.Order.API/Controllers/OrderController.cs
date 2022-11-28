@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using NET6.Microservice.Core.OpenTelemetry;
 using NET6.Microservice.Order.API.Models.Requests;
 using NET6.Microservice.Order.API.Queries;
-using NET6.Microservice.Order.API.Models;
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
+using System.Diagnostics.Metrics;
 
 namespace NET6.Microservice.Order.API.Controllers
 {
@@ -31,7 +31,8 @@ namespace NET6.Microservice.Order.API.Controllers
         [HttpGet]
         public async Task<ActionResult> GetOrdersAsync()
         {
-            using var activity = _activitySource.StartActivity("Order.Product Send", ActivityKind.Producer);
+
+            using var activity = _activitySource.StartActivity("Get Order", ActivityKind.Producer);
 
             _logger.LogInformation("Get Order");
             OpenTelemetryActivity.AddActivityTagsMessage(activity);

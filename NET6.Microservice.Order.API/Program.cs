@@ -49,8 +49,9 @@ AddCustomDBContext(builder.Services, configuration);
 InitMassTransitConfig(builder.Services, configuration);
 
 var sources = new string[] { "OrderController" };
-OpenTelemetryStartup.InitOpenTelemetryTracing(builder.Services, configuration, "OrderAPI", sources, builder.Environment);
-
+var otlpExporterUri = configuration.GetValue<string>("OpenTelemetry:OtelCollector");
+OpenTelemetryStartup.InitOpenTelemetryTracing(builder.Services, configuration, "OrderAPI", sources, otlpExporterUri, builder.Environment);
+OpenTelemetryStartup.AddOpenTelemetryLogging(builder, otlpExporterUri);
 
 // Call UseServiceProviderFactory on the Host sub property
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());

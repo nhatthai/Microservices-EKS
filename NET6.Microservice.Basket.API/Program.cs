@@ -113,7 +113,8 @@ builder.Services.AddTransient<IBasketRepository, RedisBasketRepository>();
 ConfigureAuthService(builder.Services, auth0Configuration);
 
 OpenTelemetryStartup.InitOpenTelemetryTracing(
-    builder.Services, configuration, "BasketAPI", Array.Empty<string>(), builder.Environment);
+    builder.Services, configuration, "BasketAPI", Array.Empty<string>(), 
+    "http://localhost:4317", builder.Environment);
 
 // Add the IStartupFilter using the helper method
 PathBaseStartup.AddPathBaseFilter(builder);

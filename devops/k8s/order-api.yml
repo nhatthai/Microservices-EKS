@@ -70,6 +70,20 @@ spec:
           value: "false"
         - name: Serilog__WriteTo__0__Args__path
           value: "./logs/NET6.Microservice.Order.API.logs.json"
+
+        - name: OpenTelemetry__OtelCollector
+          valueFrom:
+            configMapKeyRef:
+              name: microservice-configmap
+              key: OTEL_EXPORTER
+        - name: OpenTelemetry__OtelCollector
+          valueFrom:
+            configMapKeyRef:
+              name: microservice-configmap
+              key: OTEL_EXPORTER
+        - name: OpenTelemetry__IsAWSExporter
+          value: "true"
+
         ports:
         - containerPort: 80
         resources:

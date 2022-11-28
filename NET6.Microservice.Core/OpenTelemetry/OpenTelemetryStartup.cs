@@ -1,3 +1,8 @@
+using OpenTelemetry;
+using OpenTelemetry.Contrib.Extensions.AWSXRay.Trace;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using System.Diagnostics;
@@ -6,52 +11,108 @@ namespace NET6.Microservice.Core.OpenTelemetry
 {
     public class OpenTelemetryStartup
     {
-        public static void InitOpenTelemetryTracing(IServiceCollection services, IConfiguration configuration, string serviceName, string[] sources, IWebHostEnvironment webHostEnvironment = null)
+        public static void InitOpenTelemetryTracing(
+            IServiceCollection services, IConfiguration configuration, string serviceName,
+            string[] sources, string otlpExporterUri = "", IWebHostEnvironment webHostEnvironment = null)
         {
-            services.AddOpenTelemetryTracing(builder =>
+            bool isZipkinExporter = configuration.GetValue<bool>("OpenTelemtry:IsZipkinExporter");
+            bool isJaegerExporter = configuration.GetValue<bool>("OpenTelemtry:IsJaegerExporter");
+            bool isAWSExporter = configuration.GetValue<bool>("OpenTelemtry:IsAWSExporter");
+
+            if (isAWSExporter)
             {
-                builder
-                    .AddSource(serviceName)
-                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName))
-                    .AddAspNetCoreInstrumentation(options =>
-                    {
-                        options.Enrich = Enrich;
-                        options.RecordException = true;
-                    })
+                Sdk.CreateTracerProviderBuilder()
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName).AddTelemetrySdk())
+                    .AddXRayTraceId()
+                    .AddAWSInstrumentation()
+                    .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
-                    .AddZipkinExporter(options =>
+                    .AddOtlpExporter(options =>
                     {
-                        var zipkinURI = configuration.GetValue<string>("OpenTelemetry:ZipkinURI");
-                        if (!string.IsNullOrEmpty(zipkinURI))
-                        {
-                            options.Endpoint = new Uri(zipkinURI);
-                        }
+                        options.Endpoint = new Uri(otlpExporterUri);
                     })
-                    .AddJaegerExporter(options =>
-                    {
-                        var agentHost = configuration.GetValue<string>("OpenTelemetry:JaegerHost");
-                        var agentPort = configuration.GetValue<int>("OpenTelemetry:JaegerPort");
+                    .Build();
 
-                        if (!string.IsNullOrEmpty(agentHost) && agentPort > 0)
+                Sdk.SetDefaultTextMapPropagator(new AWSXRayPropagator());
+            }
+            else {
+                services.AddOpenTelemetryTracing(builder =>
+                {
+                    builder
+                        .AddSource(serviceName)
+                        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName))
+                        .AddAspNetCoreInstrumentation(options =>
                         {
-                            options.AgentHost = agentHost;
-                            options.AgentPort = agentPort;
-                        }
-                    });
+                            options.Enrich = Enrich;
+                            options.RecordException = true;
+                        })
+                        .AddHttpClientInstrumentation();
 
-                if (sources.Any())
-                {
-                    builder.AddSource(sources);
-                }
+                    if (isZipkinExporter)
+                    {
+                        builder.AddZipkinExporter(options =>
+                        {
+                            var zipkinURI = configuration.GetValue<string>("OpenTelemetry:ZipkinURI");
+                            if (!string.IsNullOrEmpty(zipkinURI))
+                            {
+                                options.Endpoint = new Uri(zipkinURI);
+                            }
+                        });
+                    }
 
-                if (webHostEnvironment != null && webHostEnvironment.IsDevelopment())
-                {
-                    builder.AddConsoleExporter();
-                }
-            });
+                    if (isJaegerExporter)
+                    {
+                        builder.AddJaegerExporter(options =>
+                        {
+                            var agentHost = configuration.GetValue<string>("OpenTelemetry:JaegerHost");
+                            var agentPort = configuration.GetValue<int>("OpenTelemetry:JaegerPort");
 
+                            if (!string.IsNullOrEmpty(agentHost) && agentPort > 0)
+                            {
+                                options.AgentHost = agentHost;
+                                options.AgentPort = agentPort;
+                            }
+                        });
+                    }
+
+                    if (sources.Any())
+                    {
+                        builder.AddSource(sources);
+                    }
+
+                    if (webHostEnvironment != null && webHostEnvironment.IsDevelopment())
+                    {
+                        builder.AddConsoleExporter();
+                    }
+
+                    builder.AddOtlpExporter(options => options.Endpoint = new Uri(otlpExporterUri));
+                });
+            }
         }
 
+        public static void AddOpenTelemetryLogging(WebApplicationBuilder builder, string otlpExporterUri)
+        {
+            // Configure logging
+            builder.Logging.AddOpenTelemetry(builderOpenTelemetry =>
+            {
+                builderOpenTelemetry.IncludeFormattedMessage = true;
+                builderOpenTelemetry.IncludeScopes = true;
+                builderOpenTelemetry.ParseStateValues = true;
+                builderOpenTelemetry.AddOtlpExporter(options => options.Endpoint = new Uri(otlpExporterUri));
+            });
+        }
+
+        public static void AddOpenTelemetryMetrics(IServiceCollection services, string serviceName, string otlpExporterUri)
+        {
+            // Configure metrics
+            services.AddOpenTelemetryMetrics(builder =>
+            {
+                builder.AddHttpClientInstrumentation();
+                builder.AddAspNetCoreInstrumentation();
+                builder.AddMeter(serviceName);
+                builder.AddOtlpExporter(options => options.Endpoint = new Uri(otlpExporterUri));
+            });
+        }
         private static void Enrich(Activity activity, string eventName, object obj)
         {
             if (obj is HttpRequest request)

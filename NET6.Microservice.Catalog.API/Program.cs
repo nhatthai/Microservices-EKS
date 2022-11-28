@@ -44,7 +44,7 @@ builder.Services.AddCors(c =>
 AddDbContext(builder.Services, configuration);
 
 OpenTelemetryStartup.InitOpenTelemetryTracing(
-    builder.Services, configuration, "CatalogAPI", Array.Empty<string>(), builder.Environment);
+    builder.Services, configuration, "CatalogAPI", Array.Empty<string>(), "http://localhost:4317", builder.Environment);
 
 // Add the IStartupFilter using the helper method
 PathBaseStartup.AddPathBaseFilter(builder);

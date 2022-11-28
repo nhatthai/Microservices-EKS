@@ -42,8 +42,9 @@ IHost host = Host.CreateDefaultBuilder(args)
         InitMassTransitConfig(services,configuration);
 
         string[] sources = new string[1] { "OrderConsumer" };
-        OpenTelemetryStartup.InitOpenTelemetryTracing(services, configuration, "Worker", sources);
-
+        string otlpExporterUri = configuration.GetValue<string>("OpenTelemetry:OtelCollector");
+        OpenTelemetryStartup.InitOpenTelemetryTracing(services, configuration, "Worker", sources, otlpExporterUri);
+        
         services.AddHostedService<Worker>();
     })
     .Build();

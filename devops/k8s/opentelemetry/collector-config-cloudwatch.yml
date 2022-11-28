@@ -312,7 +312,7 @@ spec:
       # AWS EMF exporter that sends metrics data as performance log events to Amazon CloudWatch
       # Only the metrics that were filtered out by the processors get to this stage of the pipeline
       # Under the metric_declarations field, add one or more sets of Amazon CloudWatch dimensions
-      # Each dimension must alredy exist as a label on the Prometheus metric
+      # Each dimension must already exist as a label on the Prometheus metric
       # For each set of dimensions, add a list of metrics under the metric_name_selectors field
       # Metrics names may be listed explicitly or using regular expressions
       # A default list of metrics has been provided

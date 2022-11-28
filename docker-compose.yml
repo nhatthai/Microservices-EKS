@@ -11,10 +11,10 @@ services:
     ports:
       - "1433:1433"
 
-  basket.data:
-    image: redis:alpine
-    ports:
-      - "6379:6379"
+  # basket.data:
+  #   image: redis:alpine
+  #   ports:
+  #     - "6379:6379"
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
@@ -26,35 +26,57 @@ services:
       RABBITMQ_DEFAULT_PASS: password
       RABBITMQ_DEFAULT_USER: admin
 
-  zipkin:
+  zipkin-all-in-one:
     image: openzipkin/zipkin
     container_name: zipkin
     ports:
       # Port used for the Zipkin UI and HTTP Api
       - 9411:9411
 
-  jaeger:
-    image: jaegertracing/opentelemetry-all-in-one
-    container_name: jaeger
-    ports:
-      - 16686:16686
-      - 6831:6831/udp
+  # jaeger:
+  #   image: jaegertracing/opentelemetry-all-in-one
+  #   container_name: jaeger
+  #   ports:
+  #     - 16686:16686
+  #     - 6831:6831/udp
 
-  basket.api:
-    build:
-      context: .
-      dockerfile: NET6.Microservice.Basket.API/Dockerfile
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
-      - "5097:80"
-    environment:
-      - DOTNET_ENVIRONMENT=Development
-      - Serilog:WriteTo:0:Args:path=/app/logs/NET6.Microservice.Basket.API.logs.json
-      - MassTransit:MessageBusRabbitMQ=amqp://admin:password@rabbitmq:5671/
-      - OpenTelemetry:ZipkinURI=http://zipkin:9411/api/v2/spans/
-      - ConnectionString=basket.data
+      - "9090:9090"
+
+  # OpenTelemetry Collector
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    command: ["--config=/etc/otel-collector-config.yml"]
+    volumes:
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+      - ./output:/etc/output:rw # Store the logs
+    ports:
+      - "8888:8888"   # Prometheus metrics exposed by the collector
+      - "8889:8889"   # Prometheus exporter metrics
+      - "4317:4317"   # OTLP gRPC receiver
     depends_on:
-      - rabbitmq
-      - basket.data
+      - zipkin
+
+  # basket.api:
+  #   build:
+  #     context: .
+  #     dockerfile: NET6.Microservice.Basket.API/Dockerfile
+  #   ports:
+  #     - "5097:80"
+  #   environment:
+  #     - DOTNET_ENVIRONMENT=Development
+  #     - Serilog:WriteTo:0:Args:path=/app/logs/NET6.Microservice.Basket.API.logs.json
+  #     - MassTransit:MessageBusRabbitMQ=amqp://admin:password@rabbitmq:5671/
+  #     - OpenTelemetry:ZipkinURI=http://zipkin:9411/api/v2/spans/
+  #     - ConnectionString=basket.data
+  #   depends_on:
+  #     - rabbitmq
+  #     - basket.data
 
   order.api:
     build:
@@ -66,23 +88,24 @@ services:
       - DOTNET_ENVIRONMENT=Development
       - Serilog:WriteTo:0:Args:path=/app/logs/NET6.Microservice.Order.API.logs.json
       - MassTransit:MessageBusRabbitMQ=amqp://admin:password@rabbitmq:5671/
-      - OpenTelemetry:ZipkinURI=http://zipkin:9411/api/v2/spans/
+      #- OpenTelemetry:ZipkinURI=http://zipkin:9411/api/v2/spans/
+      - OpenTelemetry:OtelCollector=http://otel-collector:4317/
     depends_on:
       - rabbitmq
 
-  catalog.api:
-    build:
-      context: .
-      dockerfile: NET6.Microservice.Catalog.API/Dockerfile
-    ports:
-      - "5226:80"
-    environment:
-      - DOTNET_ENVIRONMENT=Development
-      - Serilog:WriteTo:0:Args:path=/app/logs/NET6.Microservice.Catalog.API.logs.json
-      - MassTransit:MessageBusRabbitMQ=amqp://admin:password@rabbitmq:5671/
-      - OpenTelemetry:ZipkinURI=http://zipkin:9411/api/v2/spans/
-    depends_on:
-      - rabbitmq
+  # catalog.api:
+  #   build:
+  #     context: .
+  #     dockerfile: NET6.Microservice.Catalog.API/Dockerfile
+  #   ports:
+  #     - "5226:80"
+  #   environment:
+  #     - DOTNET_ENVIRONMENT=Development
+  #     - Serilog:WriteTo:0:Args:path=/app/logs/NET6.Microservice.Catalog.API.logs.json
+  #     - MassTransit:MessageBusRabbitMQ=amqp://admin:password@rabbitmq:5671/
+  #     - OpenTelemetry:ZipkinURI=http://zipkin:9411/api/v2/spans/
+  #   depends_on:
+  #     - rabbitmq
 
   workerservice:
     build:
@@ -92,6 +115,7 @@ services:
       - DOTNET_ENVIRONMENT=Development
       - Serilog:WriteTo:0:Args:path=/app/logs/NET6.Microservice.WorkerService.logs.json
       - MassTransit:MessageBusRabbitMQ=amqp://admin:password@rabbitmq:5671/
-      - OpenTelemetry:ZipkinURI=http://zipkin:9411/api/v2/spans/
+      #- OpenTelemetry:ZipkinURI=http://zipkin:9411/api/v2/spans/
+      - OpenTelemetry:OtelCollector=http://otel-collector:4317/
     depends_on:
       - rabbitmq
