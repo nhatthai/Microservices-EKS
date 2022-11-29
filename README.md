@@ -32,27 +32,43 @@ Sample Microservice on EKS, using Github Actions for deployment to EKS
 
 ### AWS Distro for OpenTelemetry
 + AWS Distro for OpenTelemetry (ADOT) prerequisites(https://docs.aws.amazon.com/eks/latest/userguide/adot-reqts.html)
+    ```
+    kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.8.2/cert-manager.yaml
+    ```
 
 + Apply the necessary permissions for ADOT to your cluster with the command:
     ```
     kubectl apply -f https://amazon-eks.s3.amazonaws.com/docs/addons-otel-permissions.yaml
     ```
 
-+ [Create an IAM OIDC provider and service account for cluster] 
++ [Create an IAM OIDC provider and service account for cluster]
 (https://docs.aws.amazon.com/eks/latest/userguide/adot-iam.html)
     - Create an IAM OIDC
     - Set Policy for Service Account
         ```
         eksctl create iamserviceaccount \
+        --approve \
         --name adot-collector \
         --namespace default \
         --cluster microservice-eks \
         --attach-policy-arn arn:aws:iam::aws:policy/AmazonPrometheusRemoteWriteAccess \
         --attach-policy-arn arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess \
-        --attach-policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy \
-        --approve \
-        --override-existing-serviceaccounts
+        --attach-policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
         ```
+
+    if it shows:
+    ```
+     1 iamserviceaccount (default/adot-collector) was excluded (based on the include/exclude rules)
+    ```
+    use command and then re-create service account
+    ```
+    eksctl delete iamserviceaccount --name=adot-collector --cluster=microservice-eks
+    ```
+
++ Check Service Account
+    ```
+    kubectl describe sa adot-collector -n default
+    ```
 
 + Add Add-On in EKS
     ```
