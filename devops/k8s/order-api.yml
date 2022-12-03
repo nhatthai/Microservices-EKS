@@ -76,11 +76,6 @@ spec:
             configMapKeyRef:
               name: microservice-configmap
               key: OTEL_EXPORTER
-        - name: OpenTelemetry__OtelCollector
-          valueFrom:
-            configMapKeyRef:
-              name: microservice-configmap
-              key: OTEL_EXPORTER
         - name: OpenTelemetry__IsAWSExporter
           value: "true"
 
