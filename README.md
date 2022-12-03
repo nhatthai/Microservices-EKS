@@ -87,6 +87,9 @@ Sample Microservice on EKS, using Github Actions for deployment to EKS
     kubectl apply -f k8s/opentelemetry/collector-config-xray.yml
     ```
 
+### Results
++ ![Grafana](./images/grafana.png)
+
 ### References
 + [Using W3C Trace Context standard in distributed tracing](https://dev.to/luizhlelis/c-using-w3c-trace-context-standard-in-distributed-tracing-1nm0)
 + [Create an ALB Ingress in Amazon EKS](https://aws.amazon.com/premiumsupport/knowledge-center/eks-alb-ingress-aws-waf/)
