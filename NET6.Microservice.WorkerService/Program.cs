@@ -8,6 +8,10 @@ using NET6.Microservice.WorkerService.Services;
 using Serilog;
 using Serilog.Exceptions;
 
+// This is required if the collector doesn't expose an https endpoint. By default, .NET
+// only allows http2 (required for gRPC) to secure endpoints.
+AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+
 IHost host = Host.CreateDefaultBuilder(args)
     .UseWindowsService(options =>
     {

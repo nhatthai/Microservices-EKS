@@ -15,9 +15,9 @@ namespace NET6.Microservice.Core.OpenTelemetry
             IServiceCollection services, IConfiguration configuration, string serviceName,
             string[] sources, string otlpExporterUri = "", IWebHostEnvironment webHostEnvironment = null)
         {
-            bool isZipkinExporter = configuration.GetValue<bool>("OpenTelemtry:IsZipkinExporter");
-            bool isJaegerExporter = configuration.GetValue<bool>("OpenTelemtry:IsJaegerExporter");
-            bool isAWSExporter = configuration.GetValue<bool>("OpenTelemtry:IsAWSExporter");
+            bool isZipkinExporter = configuration.GetValue<bool>("OpenTelemetry:IsZipkinExporter");
+            bool isJaegerExporter = configuration.GetValue<bool>("OpenTelemetry:IsJaegerExporter");
+            bool isAWSExporter = configuration.GetValue<bool>("OpenTelemetry:IsAWSExporter");
 
             if (isAWSExporter)
             {
