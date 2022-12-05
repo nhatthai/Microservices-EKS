@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
       - name: workerservice
-        image: 783560535431.dkr.ecr.ap-southeast-1.amazonaws.com/worker-service:${IMAGE_TAG}
+        image: 783560535431.dkr.ecr.ap-southeast-1.amazonaws.com/worker-service:f3f0257d140e95fdc78e3ab49a554b1202ac756e
         imagePullPolicy: Always
         env:
         - name: DOTNET_ENVIRONMENT
@@ -72,6 +72,9 @@ spec:
               key: OTEL_EXPORTER
         - name: OpenTelemetry__IsAWSExporter
           value: "true"
+
+        ports:
+        - containerPort: 80
         resources:
           requests:
             cpu: 250m
