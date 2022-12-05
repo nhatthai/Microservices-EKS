@@ -8,4 +8,4 @@ data:
   ASPNETCORE_ENVIRONMENT: "TEST"
   ASPNETCORE_URLS: "http://0.0.0.0:80"
   DOTNET_ENVIRONMENT: "TEST"
-  OTEL_EXPORTER: "http://my-collector-collector:4317"
+  OTEL_EXPORTER: "http://my-collector-xray-collector:4317"

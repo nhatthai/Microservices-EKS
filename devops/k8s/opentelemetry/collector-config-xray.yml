@@ -6,12 +6,6 @@ spec:
   image: public.ecr.aws/aws-observability/aws-otel-collector:latest
   mode: deployment
   serviceAccount: adot-collector
-  replicas: 1
-  resources:
-    requests:
-      cpu: "1"
-    limits:
-      cpu: "1"
   config: |
     receivers:
       otlp:
