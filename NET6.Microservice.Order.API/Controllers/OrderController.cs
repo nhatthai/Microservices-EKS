@@ -32,7 +32,7 @@ namespace NET6.Microservice.Order.API.Controllers
         public async Task<ActionResult> GetOrdersAsync()
         {
 
-            using var activity = _activitySource.StartActivity("Get Order", ActivityKind.Producer);
+            using var activity = _activitySource.StartActivity("Get Order", ActivityKind.Server);
 
             _logger.LogInformation("Get Order");
             OpenTelemetryActivity.AddActivityTagsMessage(activity);
@@ -54,9 +54,8 @@ namespace NET6.Microservice.Order.API.Controllers
         [HttpPost]
         public async Task<IActionResult> OrderProduct(OrderRequest order)
         {
-            using (var activity = _activitySource.StartActivity("Order.Product Send", ActivityKind.Server))
+            using (var activity = Activity.Current)
             {
-
                 _logger.LogInformation(
                     "Post Order API {CorrelationId} {OrderAmount}, {OrderNumber}",
                     activity?.Id, order.OrderAmount, order.OrderNumber);
