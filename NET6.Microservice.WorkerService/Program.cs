@@ -48,7 +48,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         string[] sources = new string[1] { "OrderConsumer" };
         string otlpExporterUri = configuration.GetValue<string>("OpenTelemetry:OtelCollector");
         OpenTelemetryStartup.InitOpenTelemetryTracing(services, configuration, "Worker", sources, otlpExporterUri);
-        
+
         services.AddHostedService<Worker>();
     })
     .Build();
@@ -129,5 +129,5 @@ static void InitMassTransitConfig(IServiceCollection services, IConfiguration co
     });
 }
 
-//await host.Services.GetRequiredService<IBusControl>().StartAsync();
+await host.Services.GetRequiredService<IBusControl>().StartAsync();
 await host.RunAsync();
