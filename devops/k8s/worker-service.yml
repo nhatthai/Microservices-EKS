@@ -72,8 +72,6 @@ spec:
               key: OTEL_EXPORTER
         - name: OpenTelemetry__IsAWSExporter
           value: "true"
-        ports:
-        - containerPort: 80
         resources:
           requests:
             cpu: 250m
