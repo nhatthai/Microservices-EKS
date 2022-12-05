@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
       - name: workerservice
-        image: 783560535431.dkr.ecr.ap-southeast-1.amazonaws.com/worker-service:f3f0257d140e95fdc78e3ab49a554b1202ac756e
+        image: 783560535431.dkr.ecr.ap-southeast-1.amazonaws.com/worker-service:${IMAGE_TAG}
         imagePullPolicy: Always
         env:
         - name: DOTNET_ENVIRONMENT
