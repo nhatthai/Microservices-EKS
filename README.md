@@ -1,14 +1,15 @@
-# Microservice run on EKS
-Sample Microservice on EKS, using Github Actions for deployment to EKS
+# Sample OpenTelemetry on EKS
+    Sample OpenTelemetry on EKS, using Github Actions for deployment to EKS
+    Apply Zipkin and Jaeger on local
+    Apply AWS Distro in AWS
 
 ## Goals
-+ Using Terraform: create Infrastructure
-+ Deploy microservice on AWS EKS with Github Actions
++ Using Terraform: create Infrastructure in AWS
++ Deploy services on AWS EKS with Github Actions
 + Message Bus with RabbitMQ and SQS
 + Integrate OpenTelemetry for tracing and metrics between services
     - Using TraceContextPropagator
 + AWS Distro for OpenTelemetry
-+ Integrate with Auth0
 
 
 ### Usage
@@ -89,6 +90,8 @@ Sample Microservice on EKS, using Github Actions for deployment to EKS
 
 ### Results
 + ![Grafana](./images/grafana.png)
++ ![Trace](./images/trace.png)
++ ![Service Map](./images/service-map.png)
 
 ### References
 + [Using W3C Trace Context standard in distributed tracing](https://dev.to/luizhlelis/c-using-w3c-trace-context-standard-in-distributed-tracing-1nm0)
