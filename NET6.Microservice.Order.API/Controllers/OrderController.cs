@@ -54,44 +54,53 @@ namespace NET6.Microservice.Order.API.Controllers
         [HttpPost]
         public async Task<IActionResult> OrderProduct(OrderRequest order)
         {
-            using var activity = _activitySource.StartActivity("Order.Product Send", ActivityKind.Producer);
-
-            _logger.LogInformation(
-                "Post Order API {CorrelationId} {OrderAmount}, {OrderNumber}",
-                 activity?.Id, order.OrderAmount, order.OrderNumber);
-
-            if (order != null)
+            using (var activity = _activitySource.StartActivity("Order.Product Send", ActivityKind.Server))
             {
-                //set properties for Propagator
-                var props = new Dictionary<string, object>();
-                props["traceparent"] = activity?.Id;
-
-                // Inject the ActivityContext into the message headers to propagate trace context to the receiving service.
-                Propagator.Inject(
-                    new PropagationContext(activity.Context, Baggage.Current), props,
-                    OpenTelemetryActivity.InjectContextMessage);
-
-                OpenTelemetryActivity.AddActivityTagsMessage(activity);
-
-                await _bus.Send(new Messages.Commands.OrderMessage()
-                {
-                    OrderId = Guid.NewGuid(),
-                    OrderAmount = order.OrderAmount,
-                    OrderDate = DateTime.Now,
-                    OrderNumber = order.OrderNumber,
-                    CorrelationId = activity?.Id
-                });
 
                 _logger.LogInformation(
-                    "Send to a message {CorrelationId} {OrderAmount}, {OrderNumber}",
+                    "Post Order API {CorrelationId} {OrderAmount}, {OrderNumber}",
                     activity?.Id, order.OrderAmount, order.OrderNumber);
 
-                activity?.SetStatus(ActivityStatusCode.Ok, "Send a message successfully.");
+                if (activity == null)
+                {
+                    throw new Exception("Activity source is null");
+                }
 
-                return Ok();
+                if (order != null)
+                {
+                    //set properties for Propagator
+                    var props = new Dictionary<string, object>();
+                    props["traceparent"] = activity?.Id;
+
+                    if (Propagator == null) {
+                        throw new Exception("Propagator is null");
+                    }
+
+                    // Inject the ActivityContext into the message headers to propagate trace context to the receiving service.
+                    Propagator.Inject( new PropagationContext(activity.Context, Baggage.Current), props, null);
+
+                    OpenTelemetryActivity.AddActivityTagsMessage(activity);
+
+                    await _bus.Send(new Messages.Commands.OrderMessage()
+                    {
+                        OrderId = Guid.NewGuid(),
+                        OrderAmount = order.OrderAmount,
+                        OrderDate = DateTime.Now,
+                        OrderNumber = order.OrderNumber,
+                        CorrelationId = activity?.Id
+                    });
+
+                    _logger.LogInformation(
+                        "Send to a message {CorrelationId} {OrderAmount}, {OrderNumber}",
+                        activity?.Id, order.OrderAmount, order.OrderNumber);
+
+                    activity?.SetStatus(ActivityStatusCode.Ok, "Send a message successfully.");
+
+                    return Ok();
+                }
+
+                activity?.SetStatus(ActivityStatusCode.Error, "Error occurred when sending a message in Post Order API");
             }
-
-            activity?.SetStatus(ActivityStatusCode.Error, "Error occurred when sending a message in Post Order API");
 
             return BadRequest();
         }
