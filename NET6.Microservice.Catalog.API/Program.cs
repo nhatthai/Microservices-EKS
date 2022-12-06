@@ -52,7 +52,7 @@ builder.Services.AddCors(c =>
 // AddDbContext(builder.Services, configuration);
 InitMassTransitConfig(builder.Services, configuration);
 
-var sources = new string[] { "OrderConsumer" };
+var sources = new string[2] { "CatalogAPI", "CatalogOrderConsumer" };
 var otlpExporterUri = configuration.GetValue<string>("OpenTelemetry:OtelCollector");
 OpenTelemetryStartup.InitOpenTelemetryTracing(
     builder.Services, configuration, "CatalogAPI", sources, otlpExporterUri, builder.Environment);
