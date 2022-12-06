@@ -30,6 +30,20 @@
     + It sets permission
     + It sets Trust relationships(aws/load-balancer-role-trust-policy)
 
+### Issues in Terraform
++ Fail to create ALB
+    ```
+    │ Error: could not download chart: failed to download "https://aws.github.io/eks-charts/aws-load-balancer-controller-1.4.6.tgz"
+    │
+    │   with helm_release.alb,
+    │   on lb-controller.tf line 35, in resource "helm_release" "alb":
+    │   35: resource "helm_release" "alb" {
+    │
+    ```
+    Fixed: Update Helm Repo
+    ```
+    helm repo update
+    ```
 
 ### AWS Distro for OpenTelemetry
 + AWS Distro for OpenTelemetry (ADOT) prerequisites(https://docs.aws.amazon.com/eks/latest/userguide/adot-reqts.html)
@@ -87,6 +101,9 @@
     kubectl apply -f k8s/opentelemetry/collector-config-cloudwatch.yml
     kubectl apply -f k8s/opentelemetry/collector-config-xray.yml
     ```
+
+### Application Load Balancer
++ Add public subnets into ingress-eks.yml and deploy ingress-eks to EKS
 
 ### Results
 + ![Grafana](./images/grafana.png)
