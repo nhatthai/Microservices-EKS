@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NET6.Microservice.Core", "N
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NET6.Microservice.Catalog.API", "NET6.Microservice.Catalog.API\NET6.Microservice.Catalog.API.csproj", "{81362F46-DE68-4A0D-A6F7-83D54874FA06}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NET6.Microservice.EmailService", "NET6.Microservice.EmailService\NET6.Microservice.EmailService.csproj", "{BAF95A35-D464-450A-9B63-A374E5080E45}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NET6.Microservice.WorkerService", "NET6.Microservice.WorkerService\NET6.Microservice.WorkerService.csproj", "{CF9A371A-505C-468B-8EC8-833C5196FACD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NET6.Microservice.Infrastructure", "NET6.Microservice.Infrastructure\NET6.Microservice.Infrastructure.csproj", "{3BE9B4A8-FB50-4F9C-B87E-EF71A9C20CAB}"

@@ -1,0 +1,85 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: catalog-api
+  labels:
+    app: catalogapi
+spec:
+  selector:
+    app: catalogapi
+  ports:
+  - protocol: TCP
+    port: 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-api
+  labels:
+    app: catalogapi
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: catalogapi
+  template:
+    metadata:
+      labels:
+        app: catalogapi
+    spec:
+      containers:
+      - name: catalogapi
+        image: 783560535431.dkr.ecr.ap-southeast-1.amazonaws.com/catalog-api:${IMAGE_TAG}
+        imagePullPolicy: Always
+        env:
+        - name: DOTNET_ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              name: microservice-configmap
+              key: DOTNET_ENVIRONMENT
+        - name: ASPNETCORE_URLS
+          valueFrom:
+            configMapKeyRef:
+              name: microservice-configmap
+              key: ASPNETCORE_URLS
+        - name: MassTransit__AwsAccessKey
+          valueFrom:
+            secretKeyRef:
+              name: microservice-basic-auth-secret
+              key: AwsAccessKey
+        - name: MassTransit__AwsSecretKey
+          valueFrom:
+            secretKeyRef:
+              name: microservice-basic-auth-secret
+              key: AwsSecretKey
+        - name: MassTransit__AwsRegion
+          valueFrom:
+            secretKeyRef:
+              name: microservice-basic-auth-secret
+              key: AwsRegion
+        - name: MassTransit__IsUsingAmazonSQS
+          value: "true"
+        - name: MassTransit__IsUsingRabbitMQ
+          value: "false"
+        - name: Serilog__WriteTo__0__Args__path
+          value: "./logs/NET6.Microservice.Catalog.API.logs.json"
+
+        - name: OpenTelemetry__OtelCollector
+          valueFrom:
+            configMapKeyRef:
+              name: microservice-configmap
+              key: OTEL_EXPORTER
+        - name: OpenTelemetry__IsAWSExporter
+          value: "false"
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m

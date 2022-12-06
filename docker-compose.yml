@@ -72,6 +72,21 @@ services:
     depends_on:
       - rabbitmq
 
+  catalog.api:
+    build:
+      context: .
+      dockerfile: NET6.Microservice.Catalog.API/Dockerfile
+    ports:
+      - "5226:80"
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - Serilog:WriteTo:0:Args:path=/app/logs/NET6.Microservice.Catalog.API.logs.json
+      - MassTransit:MessageBusRabbitMQ=amqp://admin:password@rabbitmq:5671/
+      # - OpenTelemetry:ZipkinURI=http://zipkin:9411/api/v2/spans/
+      - OpenTelemetry:OtelCollector=http://otel-collector:4317/
+    # depends_on:
+    #   - rabbitmq
+
   workerservice:
     build:
       context: .

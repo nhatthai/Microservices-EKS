@@ -1,11 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MassTransit;
+using Microsoft.EntityFrameworkCore;
+using NET6.Microservice.Catalog.API.Consumers;
 using NET6.Microservice.Catalog.API.Infrastructure;
 using NET6.Microservice.Core.OpenTelemetry;
 using NET6.Microservice.Core.PathBases;
+using NET6.Microservice.Messages;
 using NET6.Microservices.Catalog.API;
 using NET6.Microservices.Catalog.API.Infrastructure;
 using Serilog;
 using Serilog.Exceptions;
+
+// This is required if the collector doesn't expose an https endpoint. By default, .NET
+// only allows http2 (required for gRPC) to secure endpoints.
+AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +36,7 @@ builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(Log.Logger);
 
 builder.Services.Configure<CatalogSettings>(configuration);
+builder.Services.AddOptions<MassTransitConfiguration>().Bind(configuration.GetSection("MassTransit"));
 
 // Add services to the container.
 builder.Services.AddCors(c =>
@@ -41,8 +49,11 @@ builder.Services.AddCors(c =>
     );
 });
 
-AddDbContext(builder.Services, configuration);
+// AddDbContext(builder.Services, configuration);
+InitMassTransitConfig(builder.Services, configuration);
 
+var sources = new string[] { "OrderController" };
+var otlpExporterUri = configuration.GetValue<string>("OpenTelemetry:OtelCollector");
 OpenTelemetryStartup.InitOpenTelemetryTracing(
     builder.Services, configuration, "CatalogAPI", Array.Empty<string>(), "http://localhost:4317", builder.Environment);
 
@@ -52,13 +63,13 @@ PathBaseStartup.AddPathBaseFilter(builder);
 var app = builder.Build();
 
 // migrate any database changes on startup (includes initial db creation)
-using (var scope = app.Services.CreateScope())
-{
-    var dataContext = scope.ServiceProvider.GetRequiredService<CatalogContext>();
-    var env = scope.ServiceProvider.GetService<IWebHostEnvironment>();
-    dataContext.Database.Migrate();
-    new CatalogContextSeed().SeedAsync(dataContext, env).Wait();
-}
+// using (var scope = app.Services.CreateScope())
+// {
+//     var dataContext = scope.ServiceProvider.GetRequiredService<CatalogContext>();
+//     var env = scope.ServiceProvider.GetService<IWebHostEnvironment>();
+//     dataContext.Database.Migrate();
+//     new CatalogContextSeed().SeedAsync(dataContext, env).Wait();
+// }
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -86,8 +97,62 @@ static void AddDbContext(IServiceCollection services, IConfiguration configurati
             //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency
             sqlOptions.EnableRetryOnFailure(
                 maxRetryCount: 15,
-                maxRetryDelay: TimeSpan.FromSeconds(30), 
+                maxRetryDelay: TimeSpan.FromSeconds(30),
                 errorNumbersToAdd: null);
         });
+    });
+}
+
+static void InitMassTransitConfig(IServiceCollection services, IConfiguration configuration)
+{
+    services.AddOptions<MassTransitConfiguration>();
+    services.Configure<MassTransitConfiguration>(configuration.GetSection("MassTransit"));
+
+    var massTransitConfiguration = configuration.GetSection("MassTransit").Get<MassTransitConfiguration>();
+
+    services.AddMassTransit(configureMassTransit =>
+    {
+        configureMassTransit.AddConsumer<OrderConsumer>(configureConsumer =>
+        {
+            configureConsumer.UseConcurrentMessageLimit(2);
+        });
+
+        if (massTransitConfiguration.IsUsingAmazonSQS)
+        {
+            configureMassTransit.UsingAmazonSqs((context, configure) =>
+            {
+                var messageBusSQS = String.Format("{0}:{1}@{2}",
+                    massTransitConfiguration.AwsAccessKey,
+                    massTransitConfiguration.AwsSecretKey,
+                    massTransitConfiguration.AwsRegion);
+                ServiceBusConnectionConfig.ConfigureNodes(configure,  messageBusSQS);
+
+                //configure.ConfigureEndpoints(context);
+
+                configure.ReceiveEndpoint(massTransitConfiguration.OrderQueue, receive =>
+                {
+                    receive.ConfigureConsumer<OrderConsumer>(context);
+
+                    receive.PrefetchCount = 4;
+                });
+            });
+        }
+        else
+        {
+            configureMassTransit.UsingRabbitMq((context, configure) =>
+            {
+                configure.PrefetchCount = 4;
+
+                // Ensures the processor gets its own queue for any consumed messages
+                configure.ConfigureEndpoints(context, new KebabCaseEndpointNameFormatter(true));
+
+                configure.ReceiveEndpoint(massTransitConfiguration.OrderQueue, receive =>
+                {
+                    receive.ConfigureConsumer<OrderConsumer>(context);
+                });
+
+                ServiceBusConnectionConfig.ConfigureNodes(configure, massTransitConfiguration.MessageBusRabbitMQ);
+            });
+        }
     });
 }

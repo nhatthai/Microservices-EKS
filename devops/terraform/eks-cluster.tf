@@ -51,7 +51,7 @@ module "eks" {
     one = {
       name = "node-group-1"
 
-      instance_types = ["t3.small"]
+      instance_types = ["t3.medium"]
 
       min_size     = 1
       max_size     = 2
@@ -69,7 +69,7 @@ module "eks" {
     two = {
       name = "node-group-2"
 
-      instance_types = ["t3.small"]
+      instance_types = ["t3.medium"]
 
       min_size     = 1
       max_size     = 2
@@ -77,20 +77,6 @@ module "eks" {
 
       vpc_security_group_ids = [
         aws_security_group.node_group_two.id
-      ]
-    }
-
-    three = {
-      name = "node-group-3"
-
-      instance_types = ["t3.small"]
-
-      min_size     = 1
-      max_size     = 2
-      desired_size = 1
-
-      vpc_security_group_ids = [
-        aws_security_group.node_group_three.id
       ]
     }
   }

@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NET6.Microservice.Core\NET6.Microservice.Core.csproj" />
+    <ProjectReference Include="..\NET6.Microservice.Messages\NET6.Microservice.Messages.csproj" />
   </ItemGroup>
 
   <ItemGroup>
