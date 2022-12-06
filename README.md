@@ -105,6 +105,15 @@
 ### Application Load Balancer
 + Add public subnets into ingress-eks.yml and deploy ingress-eks to EKS
 
+### Post a message from Order API:
+    ```
+    POST http://k8s-default-ingressw-48da9fc196-431932575.ap-southeast-1.elb.amazonaws.com/order-api/order
+    {
+        "OrderNumber": "11111",
+        "OrderAmount": 1.1
+    }
+    ```
+
 ### Results
 + ![Grafana](./images/grafana.png)
 + ![Trace](./images/trace.png)
