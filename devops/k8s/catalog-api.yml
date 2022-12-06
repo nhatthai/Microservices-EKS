@@ -75,7 +75,7 @@ spec:
               name: microservice-configmap
               key: OTEL_EXPORTER
         - name: OpenTelemetry__IsAWSExporter
-          value: "false"
+          value: "true"
         ports:
         - containerPort: 80
         resources:
