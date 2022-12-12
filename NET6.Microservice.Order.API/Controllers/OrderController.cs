@@ -44,7 +44,7 @@ namespace NET6.Microservice.Order.API.Controllers
         [HttpPost]
         public async Task<IActionResult> OrderProduct(OrderRequest order)
         {
-            using (var activity = _activitySource.StartActivity("Producer Order", ActivityKind.Producer))
+            using (var activity = Activity.Current)
             {
                 _logger.LogInformation(
                     "Post Order API {CorrelationId} {OrderAmount}, {OrderNumber}",
