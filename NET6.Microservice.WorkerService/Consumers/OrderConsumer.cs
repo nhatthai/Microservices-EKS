@@ -34,7 +34,7 @@ namespace NET6.Microservice.WorkerService.Consumers
             var parentContext = Propagator.Extract(default, pros, OpenTelemetryActivity.ExtractTraceContextFromProperties);
 
             using var activity = _activitySource.StartActivity(
-                "Order.Product Consumer", ActivityKind.Consumer, parentContext.ActivityContext);
+                "Order.Product Consumer", ActivityKind.Server, parentContext.ActivityContext);
 
             OpenTelemetryActivity.AddActivityTagsMessage(activity);
 

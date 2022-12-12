@@ -41,20 +41,10 @@ namespace NET6.Microservice.Order.API.Controllers
             return Ok("Get Order");
         }
 
-        // [HttpGet]
-        // [ProducesResponseType(typeof(IEnumerable<OrderSummary>), (int)HttpStatusCode.OK)]
-        // public async Task<ActionResult<IEnumerable<OrderSummary>>> GetOrdersAsync()
-        // {
-        //     var userId = Guid.NewGuid();
-        //     var orders = await _orderQueries.GetOrdersFromUserAsync(userId);
-
-        //     return Ok(orders);
-        // }
-
         [HttpPost]
         public async Task<IActionResult> OrderProduct(OrderRequest order)
         {
-            using (var activity = Activity.Current)
+            using (var activity = _activitySource.StartActivity("Producer Order", ActivityKind.Producer))
             {
                 _logger.LogInformation(
                     "Post Order API {CorrelationId} {OrderAmount}, {OrderNumber}",
@@ -70,13 +60,14 @@ namespace NET6.Microservice.Order.API.Controllers
                     //set properties for Propagator
                     var props = new Dictionary<string, object>();
                     props["traceparent"] = activity?.Id;
+                    props["X-Amzn-Trace-Id"] = $"Root: {activity?.Id};Parent: {activity.Parent};Sampled=1";
 
                     if (Propagator == null) {
                         throw new Exception("Propagator is null");
                     }
 
                     // Inject the ActivityContext into the message headers to propagate trace context to the receiving service.
-                    Propagator.Inject( new PropagationContext(activity.Context, Baggage.Current), props, null);
+                    Propagator.Inject(new PropagationContext(activity.Context, Baggage.Current), props, OpenTelemetryActivity.InjectContextMessage);
 
                     OpenTelemetryActivity.AddActivityTagsMessage(activity);
 
