@@ -21,41 +21,16 @@ services:
       RABBITMQ_DEFAULT_PASS: password
       RABBITMQ_DEFAULT_USER: admin
 
-  zipkin-all-in-one:
-    image: openzipkin/zipkin
-    container_name: zipkin
-    ports:
-      # Port used for the Zipkin UI and HTTP Api
-      - 9411:9411
-
-  jaeger:
-    image: jaegertracing/opentelemetry-all-in-one
-    container_name: jaeger
-    ports:
-      - 16686:16686
-      - 6831:6831/udp
-
-  prometheus:
-    container_name: prometheus
-    image: prom/prometheus:latest
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - "9090:9090"
-
-  # OpenTelemetry Collector
   otel-collector:
-    image: otel/opentelemetry-collector:latest
-    command: ["--config=/etc/otel-collector-config.yml"]
+    image: public.ecr.aws/aws-observability/aws-otel-collector:latest
     volumes:
-      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
-      - ./output:/etc/output:rw # Store the logs
+      - ./aws-otel-collector-config/aws-collector-config.yaml:/etc/otel-agent-config.yaml
+    environment:
+      - AWS_REGION=<AWS_REGION>
+      - AWS_ACCESS_KEY_ID=<AWS_ACCESS_KEY_ID>
+      - AWS_SECRET_ACCESS_KEY=<AWS_SECRET_ACCESS_KEY>
     ports:
-      - "8888:8888"   # Prometheus metrics exposed by the collector
-      - "8889:8889"   # Prometheus exporter metrics
-      - "4317:4317"   # OTLP gRPC receiver
-    depends_on:
-      - zipkin
+      - '4317:4317'
 
   order.api:
     build:
@@ -67,9 +42,8 @@ services:
       - DOTNET_ENVIRONMENT=Development
       - Serilog:WriteTo:0:Args:path=/app/logs/NET6.Microservice.Order.API.logs.json
       - MassTransit:MessageBusRabbitMQ=amqp://admin:password@rabbitmq:5671/
-      - OpenTelemetry:ZipkinURI=http://zipkin:9411/api/v2/spans/
-      - OpenTelemetry:IsZipkinExporter=true
       - OpenTelemetry:OtelCollector=http://otel-collector:4317/
+      - OpenTelemetry:IsAWSExporter=true
     depends_on:
       - rabbitmq
 
@@ -83,9 +57,8 @@ services:
       - DOTNET_ENVIRONMENT=Development
       - Serilog:WriteTo:0:Args:path=/app/logs/NET6.Microservice.Catalog.API.logs.json
       - MassTransit:MessageBusRabbitMQ=amqp://admin:password@rabbitmq:5671/
-      - OpenTelemetry:ZipkinURI=http://zipkin:9411/api/v2/spans/
-      - OpenTelemetry:IsZipkinExporter=true
       - OpenTelemetry:OtelCollector=http://otel-collector:4317/
+      - OpenTelemetry:IsAWSExporter=true
     depends_on:
       - rabbitmq
 
@@ -97,8 +70,7 @@ services:
       - DOTNET_ENVIRONMENT=Development
       - Serilog:WriteTo:0:Args:path=/app/logs/NET6.Microservice.WorkerService.logs.json
       - MassTransit:MessageBusRabbitMQ=amqp://admin:password@rabbitmq:5671/
-      - OpenTelemetry:ZipkinURI=http://zipkin:9411/api/v2/spans/
-      - OpenTelemetry:IsZipkinExporter=true
       - OpenTelemetry:OtelCollector=http://otel-collector:4317/
+      - OpenTelemetry:IsAWSExporter=true
     depends_on:
       - rabbitmq

@@ -1,6 +1,7 @@
 # Sample OpenTelemetry on EKS
     Sample OpenTelemetry on EKS, using Github Actions for deployment to EKS
     Apply Zipkin and Jaeger on local
+    Apply AWS Collector on local
     Apply AWS Distro in AWS
 
 ## Goals
@@ -10,7 +11,7 @@
 + Integrate OpenTelemetry for tracing and metrics between services
     - Using TraceContextPropagator
 + AWS Distro for OpenTelemetry
-
++ AWS Collector on local
 
 ### Usage
 + Update kubeconfig
@@ -44,6 +45,30 @@
     ```
     helm repo update
     ```
+
+### Usage OpenTelemetry Collector with docker-compose
++ Using OpenTelemetry Collector on local
+    ```
+    docker-compose up
+    ```
+
+### Usage AWS Collector with docker-compose
++ Using AWS-Collector on local
+    ```
+    docker-compose -f .\docker-compose-aws-collector.yml up
+    ```
+
++ Post ORDER API
+    ```
+    http://localhost:5089/order
+
+    Data:
+    {
+        "OrderNumber": "77777",
+        "OrderAmount": 999.7
+    }
+    ```
++ ![Tracing in Cloud Watch](./images/Tracing-AWS-Collector.png)
 
 ### AWS Distro for OpenTelemetry
 + AWS Distro for OpenTelemetry (ADOT) prerequisites(https://docs.aws.amazon.com/eks/latest/userguide/adot-reqts.html)
