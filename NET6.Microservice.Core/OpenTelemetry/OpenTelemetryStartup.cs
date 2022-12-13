@@ -19,23 +19,7 @@ namespace NET6.Microservice.Core.OpenTelemetry
             bool isJaegerExporter = configuration.GetValue<bool>("OpenTelemetry:IsJaegerExporter");
             bool isAWSExporter = configuration.GetValue<bool>("OpenTelemetry:IsAWSExporter");
 
-            if (isAWSExporter)
-            {
-                Sdk.CreateTracerProviderBuilder()
-                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName).AddTelemetrySdk())
-                    .AddXRayTraceId()
-                    .AddAWSInstrumentation()
-                    .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddOtlpExporter(options =>
-                    {
-                        options.Endpoint = new Uri(otlpExporterUri);
-                    })
-                    .Build();
-
-                Sdk.SetDefaultTextMapPropagator(new AWSXRayPropagator());
-            }
-            else {
+            if (!isAWSExporter) {
                 services.AddOpenTelemetryTracing(builder =>
                 {
                     builder

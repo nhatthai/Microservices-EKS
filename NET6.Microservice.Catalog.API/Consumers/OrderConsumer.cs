@@ -26,12 +26,13 @@ namespace NET6.Microservice.Catalog.API.Consumers
             // set property for extracting Propagation context
             var pros = new Dictionary<string, object>();
             pros["traceparent"] = correlationId;
+            pros["X-Amzn-Trace-Id"] = $"Root: {correlationId};Parent: {correlationId};Sampled=1";
 
             // Extract the PropagationContext of order message
             var parentContext = Propagator.Extract(default, pros, OpenTelemetryActivity.ExtractTraceContextFromProperties);
 
             using var activity = _activitySource.StartActivity(
-                "Catalog Order Consumer", ActivityKind.Consumer, parentContext.ActivityContext);
+                "Catalog Order Consumer", ActivityKind.Server, parentContext.ActivityContext);
 
             OpenTelemetryActivity.AddActivityTagsMessage(activity);
 

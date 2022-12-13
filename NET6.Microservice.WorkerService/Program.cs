@@ -1,3 +1,4 @@
+using System.Reflection;
 using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using NET6.Microservice.Core.OpenTelemetry;
@@ -5,6 +6,10 @@ using NET6.Microservice.Messages;
 using NET6.Microservice.WorkerService;
 using NET6.Microservice.WorkerService.Consumers;
 using NET6.Microservice.WorkerService.Services;
+using OpenTelemetry;
+using OpenTelemetry.Contrib.Extensions.AWSXRay.Trace;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Serilog;
 using Serilog.Exceptions;
 
@@ -45,9 +50,30 @@ IHost host = Host.CreateDefaultBuilder(args)
 
         InitMassTransitConfig(services,configuration);
 
-        string[] sources = new string[2] { "WorkerService", "OrderConsumer" };
+        string[] sources = new string[1] { "OrderConsumer" };
         string otlpExporterUri = configuration.GetValue<string>("OpenTelemetry:OtelCollector");
-        OpenTelemetryStartup.InitOpenTelemetryTracing(services, configuration, "WorkerService", sources, otlpExporterUri);
+        var isAWSExporter = configuration.GetValue<bool>("OpenTelemetry:IsAWSExporter");
+
+        if (isAWSExporter)
+        {
+            Sdk.CreateTracerProviderBuilder()
+                .AddXRayTraceId()
+                .AddAWSInstrumentation()
+                .AddSource(sources)
+                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("WorkerService").AddTelemetrySdk())
+                .AddAspNetCoreInstrumentation()
+                .AddOtlpExporter(options =>
+                {
+                    options.Endpoint = new Uri(otlpExporterUri);
+                })
+                .Build();
+
+            Sdk.SetDefaultTextMapPropagator(new AWSXRayPropagator());
+        }
+        else
+        {
+            OpenTelemetryStartup.InitOpenTelemetryTracing(services, configuration, "WorkerService", sources, otlpExporterUri);
+        }
 
         services.AddHostedService<Worker>();
     })
@@ -82,9 +108,14 @@ static void InitMassTransitConfig(IServiceCollection services, IConfiguration co
                     massTransitConfiguration.AwsRegion);
                 ServiceBusConnectionConfig.ConfigureNodes(configure,  messageBusSQS);
 
-                //configure.ConfigureEndpoints(context);
+                var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
 
-                configure.ReceiveEndpoint(massTransitConfiguration.OrderQueue, receive =>
+                if (string.IsNullOrEmpty(assemblyName))
+                {
+                    throw new ArgumentNullException(assemblyName, "Queue name is unknown");
+                }
+
+                configure.ReceiveEndpoint(assemblyName, receive =>
                 {
                     receive.ConfigureConsumer<OrderConsumer>(context);
 
@@ -98,10 +129,14 @@ static void InitMassTransitConfig(IServiceCollection services, IConfiguration co
             {
                 configure.PrefetchCount = 4;
 
-                // Ensures the processor gets its own queue for any consumed messages
-                configure.ConfigureEndpoints(context, new KebabCaseEndpointNameFormatter(true));
+                var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
 
-                configure.ReceiveEndpoint(massTransitConfiguration.OrderQueue, receive =>
+                if (string.IsNullOrEmpty(assemblyName))
+                {
+                    throw new ArgumentNullException(assemblyName, "Queue name is unknown");
+                }
+
+                configure.ReceiveEndpoint(assemblyName, receive =>
                 {
                     receive.ConfigureConsumer<OrderConsumer>(context);
                 });

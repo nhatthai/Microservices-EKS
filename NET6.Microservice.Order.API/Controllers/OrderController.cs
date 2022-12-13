@@ -71,7 +71,7 @@ namespace NET6.Microservice.Order.API.Controllers
 
                     OpenTelemetryActivity.AddActivityTagsMessage(activity);
 
-                    await _bus.Send(new Messages.Commands.OrderMessage()
+                    await _bus.Publish(new Messages.Commands.OrderMessage()
                     {
                         OrderId = Guid.NewGuid(),
                         OrderAmount = order.OrderAmount,
@@ -81,7 +81,7 @@ namespace NET6.Microservice.Order.API.Controllers
                     });
 
                     _logger.LogInformation(
-                        "Send to a message {CorrelationId} {OrderAmount}, {OrderNumber}",
+                        "Publish to a message {CorrelationId} {OrderAmount}, {OrderNumber}",
                         activity?.Id, order.OrderAmount, order.OrderNumber);
 
                     activity?.SetStatus(ActivityStatusCode.Ok, "Send a message successfully.");

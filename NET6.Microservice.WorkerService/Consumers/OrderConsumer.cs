@@ -23,12 +23,13 @@ namespace NET6.Microservice.WorkerService.Consumers
         {
             var data = context.Message;
             var correlationId = data.CorrelationId;
-
+           
             _logger.LogInformation("Consume Order Message {CorrelationId} {OrderNumber}", correlationId, data.OrderNumber);
 
             // set property for extracting Propagation context
             var pros = new Dictionary<string, object>();
             pros["traceparent"] = correlationId;
+            pros["X-Amzn-Trace-Id"] = $"Root: {correlationId};Parent: {correlationId};Sampled=1";
 
             // Extract the PropagationContext of order message
             var parentContext = Propagator.Extract(default, pros, OpenTelemetryActivity.ExtractTraceContextFromProperties);
