@@ -46,6 +46,13 @@
     helm repo update
     ```
 
+### Ingress on EKS
++ Add public subnets into ingress-eks.yml
++ Create Application Load Balancer
+    ```
+    kubectl apply -f k8s\ingress-eks.yml
+    ```
+
 ### Usage OpenTelemetry Collector with docker-compose
 + Using OpenTelemetry Collector on local
     ```
