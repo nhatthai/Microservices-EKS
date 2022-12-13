@@ -155,17 +155,9 @@ static void InitMassTransitConfig(IServiceCollection services, IConfiguration co
                     massTransitConfiguration.AwsRegion);
                 ServiceBusConnectionConfig.ConfigureNodes(configure,  messageBusSQS);
 
-                var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
-
-                if (string.IsNullOrEmpty(assemblyName))
-                {
-                    throw new ArgumentNullException(assemblyName, "Queue name is unknown");
-                }
-
-                configure.ReceiveEndpoint(assemblyName, receive =>
+                configure.ReceiveEndpoint(massTransitConfiguration.OrderQueue, receive =>
                 {
                     receive.ConfigureConsumer<OrderConsumer>(context);
-
                     receive.PrefetchCount = 4;
                 });
             });

@@ -150,6 +150,7 @@
 + ![Grafana](./images/grafana.png)
 + ![Trace](./images/trace.png)
 + ![Service Map](./images/service-map.png)
++ ![Trace SQS & SNS](./images/Trace-Map-UsingSNS.png)
 
 ### References
 + [Using W3C Trace Context standard in distributed tracing](https://dev.to/luizhlelis/c-using-w3c-trace-context-standard-in-distributed-tracing-1nm0)
